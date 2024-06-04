@@ -1,14 +1,18 @@
+from dataclasses import dataclass, asdict
+import json
+import requests
+
+from django.contrib.auth.models import User
 from rest_framework import viewsets
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.decorators import renderer_classes, action
-import requests
-import json
+
 from common.models import Run
-from django.contrib.auth.models import User
 from .user_serializer import UserSerializer
 from .run_serializer import RunSerializer
-
+from .utils import Prompt
+    
 class UserViewSet(viewsets.ModelViewSet):
     http_method_names = ["get", "post", "head", "put", "delete"]
     queryset = User.objects.order_by("-id")
@@ -23,11 +27,10 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def make_prompt(self, request):
-        print(request.user)
-        prompt = request.data.get("prompt", "hello")
+        prompt = Prompt(**request.data)
         data = {
             "model": "llama3",
-            "prompt": prompt,
+            "prompt": prompt.generate_prompt(),
             "stream": False
         }
         res = requests.post('http://localhost:11434/api/generate', data=json.dumps(data))
