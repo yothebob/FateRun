@@ -37,12 +37,18 @@ class UserViewSet(viewsets.ModelViewSet):
         prompt = Prompt(**request.data)
         req_ticket = uuid.uuid4()
         prompt.queue_generation(str(req_ticket))
+        new_run = Run(uuid=uuid)
+        request.user.user_runs.add(new_run)
+        new_run.save()
+        request.user.save()
         return Response({"ticket": req_ticket})
 
     @action(detail=False, methods=['PUT'])
     def poll_run_story(self, request):
-        found_res = r.get(request.data.get("ticket"))
+        ticket = request.data.get("ticket")
+        found_res = r.get(ticket)
         if found_res:
+            r.delete(ticket)
             return Response({"ready": True, "response": found_res})
         return Response({"ready": False})
 

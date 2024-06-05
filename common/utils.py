@@ -26,7 +26,7 @@ class Prompt:
         
     def generate_prompt(self):
         motivation_times = "tbd"
-        return f"Generate a {self.perspective} story approximately {self.story_length} words long in a {self.setting} setting, the reader will be running while reading so please give occasional story motivations to run. Please ONLY generate the story."
+        return f"Generate an {self.perspective} story, minimum if {self.story_length} words long in a exciting {self.setting} setting, the reader will be running while reading so please give occasional story motivations to run. Please ONLY generate the story."
 
     def queue_generation(self, uuid):
         data = {

@@ -8,4 +8,5 @@ class Run(models.Model):
     miles = models.FloatField(default=0.0)
     start_time = models.DateTimeField(blank=True, null=True)
     end_time = models.DateTimeField(blank=True, null=True)
+    uuid = models.CharField(max_length=125, default="", blank=False, null=False)
     user = models.ForeignKey("auth.User", on_delete=models.SET_NULL, blank=True, null=True, related_name="user_runs")
