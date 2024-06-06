@@ -12,9 +12,9 @@ from rest_framework.response import Response
 from rest_framework.decorators import renderer_classes, action
 from asgiref.sync import sync_to_async
 
-from common.models import Run
+from common.models import QuestRun, Quest
 from .user_serializer import UserSerializer
-from .run_serializer import RunSerializer
+from .quest_serializer import QuestSerializer
 from .utils import Prompt
 
 r = Redis(host='0.0.0.0', port=6379, decode_responses=True)
@@ -37,10 +37,8 @@ class UserViewSet(viewsets.ModelViewSet):
         prompt = Prompt(**request.data)
         req_ticket = uuid.uuid4()
         prompt.queue_generation(str(req_ticket))
-        new_run = Run(uuid=uuid)
-        new_run.save()
-        request.user.user_runs.add(new_run)
-        request.user.save()
+        new_quest = Quest(uuid=uuid, creator=request.user)
+        new_quest.save()
         return Response({"ticket": req_ticket})
 
     @action(detail=False, methods=['PUT'])
@@ -54,15 +52,15 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
     
-class RunViewSet(viewsets.ModelViewSet):
+class QuestViewSet(viewsets.ModelViewSet):
     http_method_names = ["get", "post", "head", "put", "delete"]
-    queryset = Run.objects.order_by("-id")
-    serializer_class = RunSerializer
+    queryset = Quest.objects.order_by("-id")
+    serializer_class = QuestSerializer
     renderer_classes = [JSONRenderer]
 
     
     def retrieve(self, request, pk=None):
         user = get_object_or_404(self.get_queryset(), pk=pk)
-        serializer = RunSerializer(user, context={'request': request})
+        serializer = QuestSerializer(user, context={'request': request})
         return Response(serializer.data)
 
