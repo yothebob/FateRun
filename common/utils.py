@@ -39,10 +39,9 @@ def queued_generate(stringified_data, uuid):
         data = obj.requestTTS(dialog, 'Justin')
         with open(fname, '+wb') as file:
             file.write(data)
-    final_file_stack = 
+    final_file_stack = build_final_fstack(tts_responses.keys())
     output_fname = f"{uuid}.mp3"
-    
-    os.system('ffmpeg -i "concat:{0}" -acodec copy {1}'.format("|".join(tts_responses.keys()), output_fname))
+    os.system('ffmpeg -i "concat:{0}" -acodec copy {1}'.format("|".join(final_file_stack.keys()), output_fname))
     r.set(uuid.encode("utf8"), output_fname.encode("utf8"))
 
 # This will concatenate two mp3 files, and the resulting metadata will be that of the first file:
