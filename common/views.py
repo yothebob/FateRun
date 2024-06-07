@@ -42,13 +42,13 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response({"ticket": req_ticket})
 
     @action(detail=False, methods=['PUT'])
-    def poll_run_story(self, request):
+    def poll_prompt(self, request):
         ticket = request.data.get("ticket")
         found_res = r.get(ticket)
         if found_res:
             r.delete(ticket)
             return Response({"ready": True, "response": list(filter(lambda i: i, found_res.split("\n")))})
-        return Response({"ready": False})
+        return Response({"ready": False, "response": []})
 
 
     
