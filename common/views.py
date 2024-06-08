@@ -12,12 +12,14 @@ from rest_framework.response import Response
 from rest_framework.decorators import renderer_classes, action
 from asgiref.sync import sync_to_async
 
-from common.models import QuestRun, Quest
+from common.models import QuestRun, Quest, DialogList
 from .user_serializer import UserSerializer
 from .quest_serializer import QuestSerializer
 from .utils import Prompt
 
 r = Redis(host='0.0.0.0', port=6379, decode_responses=True)
+static_path = "/home/brandon/Projects/Python-projects/running-backend/static/"
+static_hostname = "http://192.168.0.17:8000/static/"
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -36,18 +38,26 @@ class UserViewSet(viewsets.ModelViewSet):
     def make_prompt(self, request):
         prompt = Prompt(**request.data)
         req_ticket = uuid.uuid4()
-        prompt.queue_generation(str(req_ticket))
-        new_quest = Quest(uuid=uuid, creator=request.user)
+        new_quest = Quest(uuid=str(req_ticket), creator=request.user)
         new_quest.save()
+        prompt.queue_generation(str(req_ticket))
         return Response({"ticket": req_ticket})
 
     @action(detail=False, methods=['PUT'])
     def poll_prompt(self, request):
         ticket = request.data.get("ticket")
         found_res = r.get(ticket)
+        found_quest = Quest.objects.filter(uuid=ticket).first() # for now lets just assume this will be ok
         if found_res:
+            url_list = json.loads(found_res)
+            idx = 0
+            for filename in url_list:
+                url = filename.replace(static_path,static_hostname)
+                new_dialog = DialogList(quest=found_quest, index=idx, url=url)
+                new_dialog.save()
+                idx = idx + 1
             r.delete(ticket)
-            return Response({"ready": True, "response": found_res})
+            return Response({"ready": True, "response": [fb.url for fb in found_quest.dialogs.order_by("index")]})
         return Response({"ready": False, "response": []})
 
 

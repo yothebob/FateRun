@@ -5,6 +5,7 @@ import requests
 from redis import Redis
 from rq import Queue
 from pyt2s.services import stream_elements
+# from common.models import Quest, DialogList
 import os
 import random
 
@@ -13,7 +14,7 @@ q = Queue("generate", connection=r)
 generate_endpoint = "http://localhost:11434/api/generate"
 static_path = "/home/brandon/Projects/Python-projects/running-backend/static/"
 static_hostname = "http://192.168.0.17:8000/static/"
-song_intermissions = [f"{static_path}Evan King - Titan Striker.mp3", f"{static_path}Arthur Vyncke - Breaking the siege.mp3", f"{static_path}Irish_Tin_Whistle.mp3"]
+song_intermissions = [f"{static_path}Irish_Tin_Whistle.mp3", f"{static_path}Evan_King-Titan_Striker.mp3", f"{static_path}Arthur_Vyncke-Breaking_the_siege.mp3"]
 
 
 
@@ -36,7 +37,7 @@ def queued_generate(stringified_data, uuid):
     res_json = res.json()
     obj = stream_elements.StreamElements()
     response_list = list(filter(lambda i: i, res_json["response"].split("\n")))
-    tts_responses = {f"{static_path}{base64.b64encode(dialog.encode('utf8')).decode('utf8')[:20]}.mp3" : dialog for dialog in response_list}
+    tts_responses = {f"{static_path}{(base64.b64encode(dialog.encode('utf8')).decode('utf8')[:20]).replace("/", "")}.mp3" : dialog for dialog in response_list}
     
     for fname, dialog in tts_responses.items():
         # Custom Voice
@@ -44,11 +45,7 @@ def queued_generate(stringified_data, uuid):
         with open(fname, '+wb') as file:
             file.write(data)
     final_file_stack = build_final_fstack(tts_responses.keys())
-    output_fname = f"{uuid}.mp3"
-    os.system('ffmpeg -i "concat:{0}" -acodec copy {1}'.format("|".join(final_file_stack), f"{static_path}{output_fname}"))
-    for f in tts_responses.keys():
-        os.remove(f)
-    r.set(uuid.encode("utf8"), f"{static_hostname}{output_fname}".encode("utf8"))
+    r.set(uuid.encode("utf8"), json.dumps(final_file_stack))
 
 
 class Prompt:
