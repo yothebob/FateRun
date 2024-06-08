@@ -1,3 +1,4 @@
+import base64
 import json
 from rq.job import Job
 import requests
@@ -10,7 +11,10 @@ import random
 r = Redis(host='localhost', port=6379, decode_responses=True)
 q = Queue("generate", connection=r)
 generate_endpoint = "http://localhost:11434/api/generate"
-song_intermissions = ["song1.mp3", "song2.mp3", "song3.mp3"]
+static_path = "/home/brandon/Projects/Python-projects/running-backend/static/"
+static_hostname = "http://192.168.0.17:8000/static/"
+song_intermissions = [f"{static_path}Evan King - Titan Striker.mp3", f"{static_path}Arthur Vyncke - Breaking the siege.mp3", f"{static_path}Irish_Tin_Whistle.mp3"]
+
 
 
 def build_final_fstack(dialog_fnames):
@@ -21,7 +25,7 @@ def build_final_fstack(dialog_fnames):
         if not is_every_other:
             res.append(fname)
         else:
-            res.append(song_intermissions[random.randint(0, len(song_intermissions))])
+            res.append(song_intermissions[random.randint(0, (len(song_intermissions) - 1))])
             res.append(fname)
         is_every_other = not is_every_other
     return res
@@ -32,22 +36,20 @@ def queued_generate(stringified_data, uuid):
     res_json = res.json()
     obj = stream_elements.StreamElements()
     response_list = list(filter(lambda i: i, res_json["response"].split("\n")))
-    tts_responses = {f"{base64.b64encode(dialog.encode('utf8')).decode('utf8')[:20]}.mp3" : dialog for dialog in response_list}
+    tts_responses = {f"{static_path}{base64.b64encode(dialog.encode('utf8')).decode('utf8')[:20]}.mp3" : dialog for dialog in response_list}
     
-    for fname, dialog in tts_responses:
+    for fname, dialog in tts_responses.items():
         # Custom Voice
-        data = obj.requestTTS(dialog, 'Justin')
+        data = obj.requestTTS(dialog, 'Matthew')
         with open(fname, '+wb') as file:
             file.write(data)
     final_file_stack = build_final_fstack(tts_responses.keys())
     output_fname = f"{uuid}.mp3"
-    os.system('ffmpeg -i "concat:{0}" -acodec copy {1}'.format("|".join(final_file_stack.keys()), output_fname))
-    r.set(uuid.encode("utf8"), output_fname.encode("utf8"))
+    os.system('ffmpeg -i "concat:{0}" -acodec copy {1}'.format("|".join(final_file_stack), f"{static_path}{output_fname}"))
+    for f in tts_responses.keys():
+        os.remove(f)
+    r.set(uuid.encode("utf8"), f"{static_hostname}{output_fname}".encode("utf8"))
 
-# This will concatenate two mp3 files, and the resulting metadata will be that of the first file:
-# ffmpeg -i "concat:file1.mp3|file2.mp3" -acodec copy output.mp3    
-
-    
 
 class Prompt:
 

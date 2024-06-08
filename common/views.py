@@ -47,7 +47,7 @@ class UserViewSet(viewsets.ModelViewSet):
         found_res = r.get(ticket)
         if found_res:
             r.delete(ticket)
-            return Response({"ready": True, "response": list(filter(lambda i: i, found_res.split("\n")))})
+            return Response({"ready": True, "response": found_res})
         return Response({"ready": False, "response": []})
 
 
