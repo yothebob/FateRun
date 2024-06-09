@@ -6,6 +6,7 @@ import asyncio
 
 from redis import Redis
 from django.contrib.auth.models import User
+from .varz import GENERATE_ENDPOINT, STATIC_HOSTNAME, STATIC_MUSIC_PATH
 from rest_framework import viewsets
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
@@ -17,10 +18,7 @@ from .user_serializer import UserSerializer
 from .quest_serializer import QuestSerializer
 from .utils import Prompt
 
-r = Redis(host='0.0.0.0', port=6379, decode_responses=True)
-static_path = "/home/brandon/Projects/Python-projects/running-backend/static/"
-static_hostname = "http://192.168.0.17:8000/static/"
-
+r = Redis(host='127.0.0.1', port=6379, decode_responses=True)
 
 class UserViewSet(viewsets.ModelViewSet):
     http_method_names = ["get", "post", "head", "put", "delete"]
@@ -52,7 +50,7 @@ class UserViewSet(viewsets.ModelViewSet):
             url_list = json.loads(found_res)
             idx = 0
             for filename in url_list:
-                url = filename.replace(static_path,static_hostname)
+                url = filename.replace(STATIC_MUSIC_PATH,STATIC_HOSTNAME)
                 new_dialog = DialogList(quest=found_quest, index=idx, url=url)
                 new_dialog.save()
                 idx = idx + 1

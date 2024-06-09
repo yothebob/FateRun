@@ -5,17 +5,14 @@ import requests
 from redis import Redis
 from rq import Queue
 from pyt2s.services import stream_elements
-# from common.models import Quest, DialogList
+from .varz import GENERATE_ENDPOINT, STATIC_HOSTNAME, STATIC_MUSIC_PATH
 import os
 import random
 
-r = Redis(host='localhost', port=6379, decode_responses=True)
+r = Redis(host='127.0.0.1', port=6379, decode_responses=True)
 q = Queue("generate", connection=r)
-generate_endpoint = "http://localhost:11434/api/generate"
-static_path = "/home/brandon/Projects/Python-projects/running-backend/static/"
-static_hostname = "http://192.168.0.17:8000/static/"
-song_intermissions = [f"{static_path}Irish_Tin_Whistle.mp3", f"{static_path}Evan_King-Titan_Striker.mp3", f"{static_path}Arthur_Vyncke-Breaking_the_siege.mp3"]
 
+song_intermissions = [f"{STATIC_MUSIC_PATH}{name}" for name in os.listdir(f"{STATIC_MUSIC_PATH}medieval")]
 
 
 def build_final_fstack(dialog_fnames):
@@ -33,11 +30,15 @@ def build_final_fstack(dialog_fnames):
 
 
 def queued_generate(stringified_data, uuid):
-    res = requests.post(generate_endpoint, data=stringified_data)
+    res = requests.post(GENERATE_ENDPOINT, data=stringified_data)
     res_json = res.json()
     obj = stream_elements.StreamElements()
     response_list = list(filter(lambda i: i, res_json["response"].split("\n")))
-    tts_responses = {f"{static_path}{(base64.b64encode(dialog.encode('utf8')).decode('utf8')[:20]).replace("/", "")}.mp3" : dialog for dialog in response_list}
+    tts_responses = {}
+    for dialog in response_list:
+        cleaned_name = STATIC_MUSIC_PATH + (base64.b64encode(dialog.encode('utf8')).decode('utf8')[:20]).replace("/","") + ".mp3"
+        tts_responses[cleaned_name] = dialog
+    # tts_responses = {f"{STATIC_MUSIC_PATH}{base64.b64encode(dialog.encode('utf8')).decode('utf8')[:20])}.mp3" : dialog for dialog in response_list}
     
     for fname, dialog in tts_responses.items():
         # Custom Voice
