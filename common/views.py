@@ -41,22 +41,22 @@ class UserViewSet(viewsets.ModelViewSet):
         prompt.queue_generation(str(req_ticket))
         return Response({"ticket": req_ticket})
 
-    @action(detail=False, methods=['PUT'])
-    def poll_prompt(self, request):
-        ticket = request.data.get("ticket")
-        found_res = r.get(ticket)
-        found_quest = Quest.objects.filter(uuid=ticket).first() # for now lets just assume this will be ok
-        if found_res:
-            url_list = json.loads(found_res)
-            idx = 0
-            for filename in url_list:
-                url = filename.replace(STATIC_MUSIC_PATH,STATIC_HOSTNAME)
-                new_dialog = DialogList(quest=found_quest, index=idx, url=url)
-                new_dialog.save()
-                idx = idx + 1
-            r.delete(ticket)
-            return Response({"ready": True, "response": [fb.url for fb in found_quest.dialogs.order_by("index")]})
-        return Response({"ready": False, "response": []})
+    # @action(detail=False, methods=['PUT'])
+    # def poll_prompt(self, request): # maybe I just need to run this all under the job.. then send out a FB message to let the user know they can get their new quest.
+    #     ticket = request.data.get("ticket")
+    #     found_res = r.get(ticket)
+    #     found_quest = Quest.objects.filter(uuid=ticket).first() # for now lets just assume this will be ok
+    #     if found_res:
+    #         url_list = json.loads(found_res)
+    #         idx = 0
+    #         for filename in url_list:
+    #             url = filename.replace(STATIC_MUSIC_PATH,STATIC_HOSTNAME)
+    #             new_dialog = DialogList(quest=found_quest, index=idx, url=url)
+    #             new_dialog.save()
+    #             idx = idx + 1
+    #         r.delete(ticket)
+    #         return Response({"ready": True, "response": [fb.url for fb in found_quest.dialogs.order_by("index")]})
+    #     return Response({"ready": False, "response": []})
 
 
     
