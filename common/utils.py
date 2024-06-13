@@ -1,19 +1,32 @@
+import base64
 import json
 from rq.job import Job
 import requests
 from redis import Redis
 from rq import Queue
 from pyt2s.services import stream_elements
+from .varz import GENERATE_ENDPOINT, STATIC_HOSTNAME, STATIC_MUSIC_PATH, STORY_PROMPTS
+from common.models import Quest, DialogList
 import os
 import random
+import django_rq
+# queue = 
+r = Redis(host='127.0.0.1', port=6379, decode_responses=True)
+# q = Queue("generate", connection=r)
+q = django_rq.get_queue('generate')
 
-r = Redis(host='localhost', port=6379, decode_responses=True)
-q = Queue("generate", connection=r)
-generate_endpoint = "http://localhost:11434/api/generate"
-song_intermissions = ["song1.mp3", "song2.mp3", "song3.mp3"]
+
+song_types = ["medieval", "scifi"]
+# song_intermissions = [f"{STATIC_MUSIC_PATH}medieval/{name}" for name in os.listdir(f"{STATIC_MUSIC_PATH}medieval")]
+
+def get_song_genre_intermissions(setting):
+    song_type = next(iter([x for x in song_types if x in setting]), "medieval")
+    song_intermissions = [f"{STATIC_MUSIC_PATH}{song_type}/{name}" for name in os.listdir(f"{STATIC_MUSIC_PATH}{song_type}")]
+    return song_intermissions
 
 
-def build_final_fstack(dialog_fnames):
+
+def build_final_fstack(dialog_fnames, song_intermissions):
     res = []
     is_every_other = False
     for fname in dialog_fnames:
@@ -21,33 +34,39 @@ def build_final_fstack(dialog_fnames):
         if not is_every_other:
             res.append(fname)
         else:
-            res.append(song_intermissions[random.randint(0, len(song_intermissions))])
+            res.append(song_intermissions[random.randint(0, (len(song_intermissions) - 1))])
             res.append(fname)
         is_every_other = not is_every_other
     return res
 
 
-def queued_generate(stringified_data, uuid):
-    res = requests.post(generate_endpoint, data=stringified_data)
+def queued_generate(stringified_data, uuid, setting):
+    res = requests.post(GENERATE_ENDPOINT, data=stringified_data)
     res_json = res.json()
     obj = stream_elements.StreamElements()
     response_list = list(filter(lambda i: i, res_json["response"].split("\n")))
-    tts_responses = {f"{base64.b64encode(dialog.encode('utf8')).decode('utf8')[:20]}.mp3" : dialog for dialog in response_list}
-    
-    for fname, dialog in tts_responses:
+    tts_responses = {}
+    for dialog in response_list:
+        cleaned_name = STATIC_MUSIC_PATH + (base64.b64encode(dialog.encode('utf8')).decode('utf8')[:20]).replace("/","") + ".mp3"
+        tts_responses[cleaned_name] = dialog
+    for fname, dialog in tts_responses.items():
         # Custom Voice
-        data = obj.requestTTS(dialog, 'Justin')
+        data = obj.requestTTS(dialog, 'Matthew')
         with open(fname, '+wb') as file:
             file.write(data)
-    final_file_stack = build_final_fstack(tts_responses.keys())
-    output_fname = f"{uuid}.mp3"
-    os.system('ffmpeg -i "concat:{0}" -acodec copy {1}'.format("|".join(final_file_stack.keys()), output_fname))
-    r.set(uuid.encode("utf8"), output_fname.encode("utf8"))
-
-# This will concatenate two mp3 files, and the resulting metadata will be that of the first file:
-# ffmpeg -i "concat:file1.mp3|file2.mp3" -acodec copy output.mp3    
-
+    song_intermissions = get_song_genre_intermissions(setting)
+    final_file_stack = build_final_fstack(tts_responses.keys(), song_intermissions)
+    # r.set(uuid.encode("utf8"), json.dumps(final_file_stack))
+    found_quest = Quest.objects.filter(uuid=uuid).first() # for now lets just assume this will be ok
+    idx = 0
+    for filename in final_file_stack:
+        url = filename.replace(STATIC_MUSIC_PATH,STATIC_HOSTNAME)
+        new_dialog = DialogList(quest=found_quest, index=idx, url=url)
+        new_dialog.save()
+        idx = idx + 1
+    return True
     
+
 
 class Prompt:
 
@@ -62,15 +81,18 @@ class Prompt:
         
     def generate_prompt(self):
         motivation_times = "tbd"
-        return f"Generate an {self.perspective} story, minimum if {self.story_length} words long in a exciting {self.setting} setting, the reader will be running while reading so please give occasional story motivations to run. Please ONLY generate the story."
-
+        selected_prompt = random.choice(STORY_PROMPTS)
+        return selected_prompt.format(self.perspective, self.story_length, self.setting)
+    
     def queue_generation(self, uuid):
         data = {
             "model": "llama3",
             "prompt": self.generate_prompt(),
             "stream": False
         }
-        q.enqueue(queued_generate, args=(json.dumps(data), uuid))
+        q.enqueue(queued_generate, json.dumps(data), uuid, self.setting)
+        # q.enqueue(queued_generate, args=(json.dumps(data), uuid))
         return True
+
 
     

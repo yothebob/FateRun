@@ -6,19 +6,19 @@ import asyncio
 
 from redis import Redis
 from django.contrib.auth.models import User
+from .varz import GENERATE_ENDPOINT, STATIC_HOSTNAME, STATIC_MUSIC_PATH
 from rest_framework import viewsets
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.decorators import renderer_classes, action
 from asgiref.sync import sync_to_async
 
-from common.models import QuestRun, Quest
+from common.models import QuestRun, Quest, DialogList
 from .user_serializer import UserSerializer
 from .quest_serializer import QuestSerializer
 from .utils import Prompt
 
-r = Redis(host='0.0.0.0', port=6379, decode_responses=True)
-
+r = Redis(host='127.0.0.1', port=6379, decode_responses=True)
 
 class UserViewSet(viewsets.ModelViewSet):
     http_method_names = ["get", "post", "head", "put", "delete"]
@@ -36,19 +36,27 @@ class UserViewSet(viewsets.ModelViewSet):
     def make_prompt(self, request):
         prompt = Prompt(**request.data)
         req_ticket = uuid.uuid4()
-        prompt.queue_generation(str(req_ticket))
-        new_quest = Quest(uuid=uuid, creator=request.user)
+        new_quest = Quest(uuid=str(req_ticket), creator=request.user)
         new_quest.save()
+        prompt.queue_generation(str(req_ticket))
         return Response({"ticket": req_ticket})
 
-    @action(detail=False, methods=['PUT'])
-    def poll_prompt(self, request):
-        ticket = request.data.get("ticket")
-        found_res = r.get(ticket)
-        if found_res:
-            r.delete(ticket)
-            return Response({"ready": True, "response": list(filter(lambda i: i, found_res.split("\n")))})
-        return Response({"ready": False, "response": []})
+    # @action(detail=False, methods=['PUT'])
+    # def poll_prompt(self, request): # maybe I just need to run this all under the job.. then send out a FB message to let the user know they can get their new quest.
+    #     ticket = request.data.get("ticket")
+    #     found_res = r.get(ticket)
+    #     found_quest = Quest.objects.filter(uuid=ticket).first() # for now lets just assume this will be ok
+    #     if found_res:
+    #         url_list = json.loads(found_res)
+    #         idx = 0
+    #         for filename in url_list:
+    #             url = filename.replace(STATIC_MUSIC_PATH,STATIC_HOSTNAME)
+    #             new_dialog = DialogList(quest=found_quest, index=idx, url=url)
+    #             new_dialog.save()
+    #             idx = idx + 1
+    #         r.delete(ticket)
+    #         return Response({"ready": True, "response": [fb.url for fb in found_quest.dialogs.order_by("index")]})
+    #     return Response({"ready": False, "response": []})
 
 
     
