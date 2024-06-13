@@ -76,9 +76,11 @@ Vagrant.configure("2") do |config|
   pip install -r requirements.txt;
   python3 manage.py migrate;
   cp /srv/www/FateRun/Deployment/nginx.conf /etc/nginx/sites-enabled/default;
-  cp /var/www/FateRun/Deployment/uwsgi.ini /etc/uwsgi/apps-enabled/faterun.ini;
+  cp /srv/www/FateRun/Deployment/uwsgi.ini /etc/uwsgi/apps-enabled/faterun.ini;
+  cp /srv/www/FateRun/Deployment/rq_worker_systemd.conf /etc/systemd/system/rqworker@.service;
   mkdir /var/log/faterun;
   service uwsgi restart;
+  systemctl start rqworker@1.service
   service nginx restart;
   SHELL
 end
