@@ -10,6 +10,7 @@ from .varz import GENERATE_ENDPOINT, STATIC_HOSTNAME, STATIC_MUSIC_PATH
 from rest_framework import viewsets
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
+from rest_framework.exceptions import ParseError
 from rest_framework.decorators import renderer_classes, action
 from asgiref.sync import sync_to_async
 
@@ -34,9 +35,10 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['POST'])
     def make_prompt(self, request):
+        make_public = request.data.pop("public", False)
         prompt = Prompt(**request.data)
         req_ticket = uuid.uuid4()
-        new_quest = Quest(uuid=str(req_ticket), creator=request.user)
+        new_quest = Quest(uuid=str(req_ticket), creator=request.user, public=make_public)
         new_quest.save()
         prompt.queue_generation(str(req_ticket))
         return Response({"ticket": req_ticket})
@@ -68,7 +70,31 @@ class QuestViewSet(viewsets.ModelViewSet):
 
     
     def retrieve(self, request, pk=None):
-        user = get_object_or_404(self.get_queryset(), pk=pk)
-        serializer = QuestSerializer(user, context={'request': request})
+        quest = get_object_or_404(self.get_queryset(), pk=pk)
+        serializer = QuestSerializer(quest, context={'request': request})
         return Response(serializer.data)
+
+    @action(detail=False, methods=['GET'])
+    def public_quests(self, request):
+        public_queryset = self.get_queryset().filter(public=True)
+        serializer = QuestSerializer(public_queryset, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['GET'])
+    def personal_quests(self, request):
+        public_queryset = self.get_queryset().filter(creator=request.user)
+        serializer = QuestSerializer(public_queryset, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['POST'])
+    def rate_quest(self, request, pk=None):
+        quest = get_object_or_404(self.get_queryset(), pk=pk)
+        ranking = request.data.get("ranking", None)
+        if not ranking:
+            raise ParseError("Missing 'ranking' key")
+        quest.ranking = ranking
+        quest.save()
+        serializer = QuestSerializer(quest)
+        return Response(serializer.data)
+
 

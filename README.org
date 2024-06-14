@@ -1,0 +1,31 @@
+* QuestRunner
+
+An android application that gives you custom quests to inspire your run.
+
+* TODO Things
+- App
+  - [ ] List public quests
+  - [ ] List personal quests
+  - [ ] create a quest page
+  - [ ] gps
+  - [ ] run time
+  - [ ] impliment voyager viewmodel for state safety and rerouting
+  - [ ] push up git repo
+    
+- API
+  - [ ] Add quest rating and public to serializer/views
+  - [X] Add quest rating api call
+
+- Backend
+  - [ ] Finish vagrant dev setup
+  - [ ] Add quest name generation to prompt, and save as quest name
+  - [ ] Move generated tts mp3's to a subfolder in static
+  - [ ] Add Prompt listing
+  - [ ] Add tts voice selection
+  - [ ] see if its possible to move to golang
+
+- Others
+- [ ] I want to impliment a game into the android app
+- [ ] Add quest completion game rewards/currency
+- [ ] I want to impliment a game currency in the app, that is used to generate quests
+- [ ] Maybe add prompts to generate stories for other forms of exersize. bicycling or lifting weights

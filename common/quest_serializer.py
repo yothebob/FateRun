@@ -19,8 +19,11 @@ class QuestSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "uuid",
+            "name",
             "dialogs",
-            "creator"
+            "creator",
+            "rating",
+            "public"
         ]
 
 
