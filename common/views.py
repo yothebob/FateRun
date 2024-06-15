@@ -6,18 +6,20 @@ import asyncio
 
 from redis import Redis
 from django.contrib.auth.models import User
-from .varz import GENERATE_ENDPOINT, STATIC_HOSTNAME, STATIC_MUSIC_PATH
+from django.shortcuts import get_object_or_404
+from django.contrib.auth import authenticate
 from rest_framework import viewsets
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.exceptions import ParseError
 from rest_framework.decorators import renderer_classes, action
-from asgiref.sync import sync_to_async
+from rest_framework_simplejwt.tokens import RefreshToken
 
-from common.models import QuestRun, Quest, DialogList
+from common.models import QuestRun, Quest, DialogList, QuestRating
+from .varz import GENERATE_ENDPOINT, STATIC_HOSTNAME, STATIC_MUSIC_PATH
 from .user_serializer import UserSerializer
 from .quest_serializer import QuestSerializer
-from .utils import Prompt
+from .utils import Prompt, QuestPrompt
 
 r = Redis(host='127.0.0.1', port=6379, decode_responses=True)
 
@@ -33,6 +35,17 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = UserSerializer(user, context={'request': request})
         return Response(serializer.data)
 
+    @action(detail=False, methods=['POST'])
+    def login(self, request):
+        data = request.data
+        if not data.get("username") or not data.get("password"):
+            raise ParseError("Missing details")
+        found_user = authenticate(username=data.get("username"), password= data.get("password"))
+        if not found_user:
+            raise ParseError("Invalid details")
+        new_tokens = RefreshToken.for_user(found_user)
+        return Response({"access": str(new_tokens.access_token), "refresh": str(new_tokens)})
+    
     @action(detail=False, methods=['POST'])
     def make_prompt(self, request):
         make_public = request.data.pop("public", False)
@@ -86,14 +99,18 @@ class QuestViewSet(viewsets.ModelViewSet):
         serializer = QuestSerializer(public_queryset, many=True)
         return Response(serializer.data)
 
-    @action(detail=True, methods=['POST'])
-    def rate_quest(self, request, pk=None):
-        quest = get_object_or_404(self.get_queryset(), pk=pk)
+    @action(detail=False, methods=['PUT'])
+    def rate_quest(self, request):
+        quest = Quest.objects.filter(id=request.data.get("pk")).first()
+        if not quest:
+            raise ParseError("Quest not found")
         ranking = request.data.get("ranking", None)
         if not ranking:
             raise ParseError("Missing 'ranking' key")
-        quest.ranking = ranking
-        quest.save()
+        new_rating = QuestRating(rating=ranking, quest=quest)
+        new_rating.save()
+        # quest.rating = ranking
+        # quest.save()
         serializer = QuestSerializer(quest)
         return Response(serializer.data)
 

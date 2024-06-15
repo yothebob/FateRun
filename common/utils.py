@@ -16,13 +16,33 @@ r = Redis(host='127.0.0.1', port=6379, decode_responses=True)
 q = django_rq.get_queue('generate')
 
 
-song_types = ["medieval", "scifi"]
+class QuestPrompt():
+
+    song_type_map = {
+        "medieval": "medieval",
+        "scifi": "scifi"
+    }
+    
+    def __init__(self, setting="medieval"):
+        self.setting = setting
+        self.song_type_map = {
+            "medieval": "medieval",
+            "scifi": "scifi"
+        }
+        
+    def qp_get_song_genre_intermissions(self):
+        song_type = self.song_type_map.get(self.setting, "medieval")
+        return [f"{STATIC_MUSIC_PATH}{song_type}/{name}" for name in os.listdir(f"{STATIC_MUSIC_PATH}{song_type}")]
+
+    
+    
+
+# song_types = ["medieval", "scifi"]
 # song_intermissions = [f"{STATIC_MUSIC_PATH}medieval/{name}" for name in os.listdir(f"{STATIC_MUSIC_PATH}medieval")]
 
 def get_song_genre_intermissions(setting):
-    song_type = next(iter([x for x in song_types if x in setting]), "medieval")
-    song_intermissions = [f"{STATIC_MUSIC_PATH}{song_type}/{name}" for name in os.listdir(f"{STATIC_MUSIC_PATH}{song_type}")]
-    return song_intermissions
+    qp = QuestPrompt(setting)
+    return qp.qp_get_song_genre_intermissions()
 
 
 

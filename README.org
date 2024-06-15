@@ -4,6 +4,7 @@ An android application that gives you custom quests to inspire your run.
 
 * TODO Things
 - App
+  - [ ] Login page
   - [ ] List public quests
   - [ ] List personal quests
   - [ ] create a quest page
@@ -13,8 +14,9 @@ An android application that gives you custom quests to inspire your run.
   - [ ] push up git repo
     
 - API
-  - [ ] Add quest rating and public to serializer/views
+  - [X] Add quest rating and public to serializer/views
   - [X] Add quest rating api call
+  - [X] Login endpoint
 
 - Backend
   
