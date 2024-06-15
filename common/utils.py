@@ -45,6 +45,8 @@ def queued_generate(stringified_data, uuid, setting):
     res_json = res.json()
     obj = stream_elements.StreamElements()
     response_list = list(filter(lambda i: i, res_json["response"].split("\n")))
+    # TODO: combine paragraphs that are too small...
+    # TODO: pull off the story title, and save it to the quest.name
     tts_responses = {}
     for dialog in response_list:
         cleaned_name = STATIC_MUSIC_PATH + (base64.b64encode(dialog.encode('utf8')).decode('utf8')[:20]).replace("/","") + ".mp3"
