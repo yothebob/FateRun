@@ -51,7 +51,7 @@ class UserViewSet(viewsets.ModelViewSet):
         make_public = request.data.pop("public", False)
         prompt = Prompt(**request.data)
         req_ticket = uuid.uuid4()
-        new_quest = Quest(uuid=str(req_ticket), creator=request.user, public=make_public)
+        new_quest = Quest(uuid=str(req_ticket), creator=request.user, public=make_public, rating=0.0)
         new_quest.save()
         prompt.queue_generation(str(req_ticket))
         return Response({"ticket": req_ticket})
@@ -113,5 +113,9 @@ class QuestViewSet(viewsets.ModelViewSet):
         # quest.save()
         serializer = QuestSerializer(quest)
         return Response(serializer.data)
+
+    @action(detail=False, methods=['GET'])
+    def quest_prompts(self, request):
+        return Response({"prompts": QuestPrompt.song_type_map.keys()})
 
 
