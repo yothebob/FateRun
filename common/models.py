@@ -10,6 +10,10 @@ class Quest(models.Model):
     uuid = models.CharField(max_length=125, default="", blank=False, null=False)
     creator = models.ForeignKey("auth.User", on_delete=models.SET_NULL, blank=True, null=True, related_name="user_quests")
 
+class QuestRating(models.Model):
+    quest = models.ForeignKey("Quest", on_delete=models.SET_NULL, blank=True, null=True, related_name="rated_quest")
+    rating = models.FloatField(default=0.0)
+                            
 class DialogList(models.Model):
     quest = models.ForeignKey("Quest", on_delete=models.SET_NULL, blank=True, null=True, related_name="dialogs")
     index = models.IntegerField(default=0)

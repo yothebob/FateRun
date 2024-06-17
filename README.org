@@ -4,6 +4,7 @@ An android application that gives you custom quests to inspire your run.
 
 * TODO Things
 - App
+  - [ ] Login page
   - [ ] List public quests
   - [ ] List personal quests
   - [ ] create a quest page
@@ -13,16 +14,17 @@ An android application that gives you custom quests to inspire your run.
   - [ ] push up git repo
     
 - API
-  - [ ] Add quest rating and public to serializer/views
+  - [X] Add quest rating and public to serializer/views
   - [X] Add quest rating api call
+  - [X] Login endpoint
 
 - Backend
   
   - [ ] Finish vagrant dev setup (maybe have a proxy for ollama, so the dev box does not have to run it)
-  - [ ] Add a function to merge paragraphs that are less then x chars long into the previous paragraph
-  - [ ] Add quest name generation to prompt, and save as quest name
-  - [ ] Move generated tts mp3's to a subfolder in static
-  - [ ] Add Prompt listing
+  - [X] Add a function to merge paragraphs that are less then x chars long into the previous paragraph
+  - [X] Add quest name generation to prompt, and save as quest name
+  - [X] Move generated tts mp3's to a subfolder in static
+  - [X] Add Prompt listing
   - [ ] Add tts voice selection
   - [ ] see if its possible to move to golang
 

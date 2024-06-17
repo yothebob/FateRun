@@ -5,7 +5,7 @@ import requests
 from redis import Redis
 from rq import Queue
 from pyt2s.services import stream_elements
-from .varz import GENERATE_ENDPOINT, STATIC_HOSTNAME, STATIC_MUSIC_PATH, STORY_PROMPTS
+from .varz import GENERATE_ENDPOINT, STATIC_HOSTNAME, STATIC_MUSIC_PATH, STORY_PROMPTS, DIALOG_FOLDER
 from common.models import Quest, DialogList
 import os
 import random
@@ -16,13 +16,33 @@ r = Redis(host='127.0.0.1', port=6379, decode_responses=True)
 q = django_rq.get_queue('generate')
 
 
-song_types = ["medieval", "scifi"]
+class QuestPrompt():
+
+    song_type_map = {
+        "medieval": "medieval",
+        "scifi": "scifi"
+    }
+    
+    def __init__(self, setting="medieval"):
+        self.setting = setting
+        self.song_type_map = {
+            "medieval": "medieval",
+            "scifi": "scifi"
+        }
+        
+    def qp_get_song_genre_intermissions(self):
+        song_type = self.song_type_map.get(self.setting, "medieval")
+        return [f"{STATIC_MUSIC_PATH}{song_type}/{name}" for name in os.listdir(f"{STATIC_MUSIC_PATH}{song_type}")]
+
+    
+    
+
+# song_types = ["medieval", "scifi"]
 # song_intermissions = [f"{STATIC_MUSIC_PATH}medieval/{name}" for name in os.listdir(f"{STATIC_MUSIC_PATH}medieval")]
 
 def get_song_genre_intermissions(setting):
-    song_type = next(iter([x for x in song_types if x in setting]), "medieval")
-    song_intermissions = [f"{STATIC_MUSIC_PATH}{song_type}/{name}" for name in os.listdir(f"{STATIC_MUSIC_PATH}{song_type}")]
-    return song_intermissions
+    qp = QuestPrompt(setting)
+    return qp.qp_get_song_genre_intermissions()
 
 
 
@@ -39,17 +59,34 @@ def build_final_fstack(dialog_fnames, song_intermissions):
         is_every_other = not is_every_other
     return res
 
+def combine_short_dialogs(dialog_list): #TODO: clean up
+    min_limit = 200
+    res_list = []
+    current_res_index = 0
+    for d in dialog_list:
+        if len(d) < min_limit:
+            if len(res_list) <= current_res_index:
+                res_list.append(d)
+            else:
+                res_list[current_res_index] = res_list[current_res_index] + " " + d
+        else:
+            res_list.append(d)
+            current_res_index += 1
+    return res_list
+            
 
 def queued_generate(stringified_data, uuid, setting):
     res = requests.post(GENERATE_ENDPOINT, data=stringified_data)
     res_json = res.json()
     obj = stream_elements.StreamElements()
+    found_quest = Quest.objects.filter(uuid=uuid).first() # for now lets just assume this will be ok
     response_list = list(filter(lambda i: i, res_json["response"].split("\n")))
-    # TODO: combine paragraphs that are too small...
-    # TODO: pull off the story title, and save it to the quest.name
+    found_quest.name = response_list.pop(0).replace('\"','')
+    found_quest.save()
+    response_list = combine_short_dialogs(response_list)
     tts_responses = {}
-    for dialog in response_list:
-        cleaned_name = STATIC_MUSIC_PATH + (base64.b64encode(dialog.encode('utf8')).decode('utf8')[:20]).replace("/","") + ".mp3"
+    for idx, dialog in enumerate(response_list):
+        cleaned_name = STATIC_MUSIC_PATH + DIALOG_FOLDER + f"{uuid[:10]}-{found_quest.name.replace(' ', '')}-{idx}" + ".mp3"
         tts_responses[cleaned_name] = dialog
     for fname, dialog in tts_responses.items():
         # Custom Voice
@@ -58,14 +95,10 @@ def queued_generate(stringified_data, uuid, setting):
             file.write(data)
     song_intermissions = get_song_genre_intermissions(setting)
     final_file_stack = build_final_fstack(tts_responses.keys(), song_intermissions)
-    # r.set(uuid.encode("utf8"), json.dumps(final_file_stack))
-    found_quest = Quest.objects.filter(uuid=uuid).first() # for now lets just assume this will be ok
-    idx = 0
-    for filename in final_file_stack:
+    for idx, filename in enumerate(final_file_stack):
         url = filename.replace(STATIC_MUSIC_PATH,STATIC_HOSTNAME)
         new_dialog = DialogList(quest=found_quest, index=idx, url=url)
         new_dialog.save()
-        idx = idx + 1
     return True
     
 
