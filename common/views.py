@@ -17,9 +17,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from common.models import QuestRun, Quest, DialogList, QuestRating
 from .varz import GENERATE_ENDPOINT, STATIC_HOSTNAME, STATIC_MUSIC_PATH
-from .user_serializer import UserSerializer
-from .quest_serializer import QuestSerializer
-from .utils import Prompt, QuestPrompt
+from common.serializers import QuestSerializer, UserSerializer
+from common.quest_prompt_generator import Prompt, QuestPrompt
 
 r = Redis(host='127.0.0.1', port=6379, decode_responses=True)
 
