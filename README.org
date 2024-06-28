@@ -12,11 +12,17 @@ An android application that gives you custom quests to inspire your run.
   - [ ] run time
   - [ ] impliment voyager viewmodel for state safety and rerouting
   - [ ] push up git repo
+  - [ ] add firebase notifications to let you know when your prompt is done
+  - [ ] show the details of the dialog/music you are on currently.
+  - [ ] impliment view models to hold state in app.
     
 - API
   - [X] Add quest rating and public to serializer/views
   - [X] Add quest rating api call
   - [X] Login endpoint
+  - [ ] quest list by popularity
+  - [ ] quest list by genre
+  - [ ] impliment users/runs tracking 
 
 - Backend
   
@@ -27,10 +33,33 @@ An android application that gives you custom quests to inspire your run.
   - [X] Add Prompt listing
   - [ ] Add tts voice selection
   - [ ] see if its possible to move to golang
+  - [ ] Finish lib to select music most like prompt
+  - [ ] Finish code/file cleanup/consolidation
+  - [ ] Add model to store music files and music metadata/tags?
+  - [ ] add new model adventure that links quests together in linked list fashion
+    
+- Site
+
+  - [ ] Add a website, with the ability to view/play the game & make prompts
+  - [ ] on a site add the ability to make your own prompts from your own music/ custom written dialog.
+
+- Genres
+  - [ ] Scifi
+  - [ ] western
+  - [ ] noir
+  - [ ] world war 2
+  - [ ] scifi war
+  - [ ] war stories
+
+
+- Game 
+  - [ ] I want to impliment a game into the android app
+  - [ ] Add quest completion game rewards/currency
+  - [ ] play with littlekt vs korge
+  - [ ] I want to impliment a game currency in the app, that is used to generate quests
 
 - Others
-- [ ] I want to impliment a game into the android app
-- [ ] Add quest completion game rewards/currency
-- [ ] I want to impliment a game currency in the app, that is used to generate quests
-- [ ] Maybe add prompts to generate stories for other forms of exersize. bicycling or lifting weights
+  - [ ] Maybe add prompts to generate stories for other forms of exersize. bicycling or lifting weights
+
+
 
