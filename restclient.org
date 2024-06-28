@@ -1,0 +1,103 @@
+
+
+* Create Quest 
+#+begin_src restclient
+POST http://192.168.0.17:8000/api/v0/users/make_prompt/
+content-type: application/json
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE5MTk5OTY0LCJpYXQiOjE3MTg3Njc5NjQsImp0aSI6ImZkMDQ1YWEzN2Q2ZTQ1OGQ4ZGI1ZDA2MjE4OGQyMGE1IiwidXNlcl9pZCI6MX0.VwuZ-9TnNcSJEjTozU1cB8i-c7fm0H-J6LXHj7qgyj8
+{
+"public": false,
+ "motivation_freq": "low",
+ "setting": "medieval dungeons and dragons",
+ "story_length": 300
+}
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC js
+{
+  "ticket": "84995896-b54d-4d3a-a89f-80af2ec3879a"
+}
+// POST http://192.168.0.17:8000/api/v0/users/make_prompt/
+// HTTP/1.1 200 OK
+// Date: Wed, 19 Jun 2024 03:33:12 GMT
+// Server: WSGIServer/0.2 CPython/3.12.3
+// Content-Type: application/json
+// Allow: POST
+// X-Frame-Options: DENY
+// Content-Length: 49
+// X-Content-Type-Options: nosniff
+// Referrer-Policy: same-origin
+// Cross-Origin-Opener-Policy: same-origin
+// Request duration: 0.015279s
+#+END_SRC
+
+* List Public Quests
+
+#+begin_src restclient
+GET http://192.168.0.17:8000/api/v0/quests/public_quests/
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC js
+[]
+// GET http://192.168.0.17:8000/api/v0/quests/public_quests/
+// HTTP/1.1 200 OK
+// Date: Wed, 19 Jun 2024 03:34:08 GMT
+// Server: WSGIServer/0.2 CPython/3.12.3
+// Content-Type: application/json
+// Allow: GET, HEAD
+// X-Frame-Options: DENY
+// Content-Length: 2
+// X-Content-Type-Options: nosniff
+// Referrer-Policy: same-origin
+// Cross-Origin-Opener-Policy: same-origin
+// Request duration: 0.002469s
+#+END_SRC
+
+* List Personal Quests
+
+#+begin_src restclient
+GET http://192.168.0.17:8000/api/v0/quests/personal_quests/
+content-type: application/json
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE5MTk5OTY0LCJpYXQiOjE3MTg3Njc5NjQsImp0aSI6ImZkMDQ1YWEzN2Q2ZTQ1OGQ4ZGI1ZDA2MjE4OGQyMGE1IiwidXNlcl9pZCI6MX0.VwuZ-9TnNcSJEjTozU1cB8i-c7fm0H-J6LXHj7qgyj8
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC js
+[
+  {
+    "id": 10,
+    "uuid": "84995896-b54d-4d3a-a89f-80af2ec3879a",
+    "name": "**The Cursed Temple of the Dragon's Spire**",
+    "dialogs": [
+      "http://192.168.0.17:8000/assets/dialogs/84995896-b-**TheCursedTempleoftheDragon'sSpire**-0.mp3",
+      "http://192.168.0.17:8000/assets/medieval/battle_of_the_creek.mp3",
+      "http://192.168.0.17:8000/assets/dialogs/84995896-b-**TheCursedTempleoftheDragon'sSpire**-1.mp3",
+      "http://192.168.0.17:8000/assets/dialogs/84995896-b-**TheCursedTempleoftheDragon'sSpire**-2.mp3",
+      "http://192.168.0.17:8000/assets/medieval/ThreeSheetsToTheWind.mp3",
+      "http://192.168.0.17:8000/assets/dialogs/84995896-b-**TheCursedTempleoftheDragon'sSpire**-3.mp3",
+      "http://192.168.0.17:8000/assets/dialogs/84995896-b-**TheCursedTempleoftheDragon'sSpire**-4.mp3",
+      "http://192.168.0.17:8000/assets/medieval/Silverman_Sound_Studios-Fiddle_De_Dee.mp3",
+      "http://192.168.0.17:8000/assets/dialogs/84995896-b-**TheCursedTempleoftheDragon'sSpire**-5.mp3",
+      "http://192.168.0.17:8000/assets/dialogs/84995896-b-**TheCursedTempleoftheDragon'sSpire**-6.mp3"
+    ],
+    "creator": 1,
+    "rating": 0.0,
+    "public": false
+  }
+]
+// GET http://192.168.0.17:8000/api/v0/quests/personal_quests/
+// HTTP/1.1 200 OK
+// Date: Wed, 19 Jun 2024 03:36:00 GMT
+// Server: WSGIServer/0.2 CPython/3.12.3
+// Content-Type: application/json
+// Allow: GET, HEAD
+// X-Frame-Options: DENY
+// Content-Length: 1061
+// X-Content-Type-Options: nosniff
+// Referrer-Policy: same-origin
+// Cross-Origin-Opener-Policy: same-origin
+// Request duration: 0.009710s
+#+END_SRC
+
