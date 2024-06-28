@@ -15,8 +15,8 @@ from rest_framework.exceptions import ParseError
 from rest_framework.decorators import renderer_classes, action
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from common.models import QuestRun, Quest, DialogList, QuestRating
-from .varz import GENERATE_ENDPOINT, STATIC_HOSTNAME, STATIC_MUSIC_PATH
+from common.models import QuestRun, Quest, DialogList
+from common.varz import GENERATE_ENDPOINT, STATIC_HOSTNAME, STATIC_MUSIC_PATH
 from common.serializers import QuestSerializer, UserSerializer
 from common.quest_prompt_generator import Prompt, QuestPrompt
 
@@ -93,8 +93,15 @@ class QuestViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     @action(detail=False, methods=['GET'])
-    def personal_quests(self, request):
-        public_queryset = self.get_queryset().filter(creator=request.user)
+    def highest_rated_quests(self, request):
+        high_rated_queryset = self.get_queryset().filter(public=True).order_by("-ranking")
+        serializer = QuestSerializer(high_rated_queryset, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['GET'])
+    def quests_by_genre(self, request):
+        genre = request.args.get("genre", "medieval")
+        public_queryset = self.get_queryset().filter(public=True, genre=genre)
         serializer = QuestSerializer(public_queryset, many=True)
         return Response(serializer.data)
 
@@ -106,8 +113,8 @@ class QuestViewSet(viewsets.ModelViewSet):
         ranking = request.data.get("ranking", None)
         if not ranking:
             raise ParseError("Missing 'ranking' key")
-        new_rating = QuestRating(rating=ranking, quest=quest)
-        new_rating.save()
+        # new_rating = QuestRating(rating=ranking, quest=quest)
+        # new_rating.save()
         # quest.rating = ranking
         # quest.save()
         serializer = QuestSerializer(quest)

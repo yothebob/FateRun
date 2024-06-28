@@ -20,8 +20,8 @@ An android application that gives you custom quests to inspire your run.
   - [X] Add quest rating and public to serializer/views
   - [X] Add quest rating api call
   - [X] Login endpoint
-  - [ ] quest list by popularity
-  - [ ] quest list by genre
+  - [X] quest list by popularity
+  - [X] quest list by genre
   - [ ] impliment users/runs tracking 
 
 - Backend
@@ -32,11 +32,12 @@ An android application that gives you custom quests to inspire your run.
   - [X] Move generated tts mp3's to a subfolder in static
   - [X] Add Prompt listing
   - [ ] Add tts voice selection
-  - [ ] see if its possible to move to golang
+  - [ ] see if its possible to move to golang/clisp/elixir
   - [ ] Finish lib to select music most like prompt
-  - [ ] Finish code/file cleanup/consolidation
-  - [ ] Add model to store music files and music metadata/tags?
-  - [ ] add new model adventure that links quests together in linked list fashion
+  - [X] Finish code/file cleanup/consolidation
+  - [X] Add model to store music files and music metadata/tags?
+  - [X] add new model adventure that links quests together in linked list fashion
+  - [ ] new django command to load statif files into django static objects that will point to dialog lists
     
 - Site
 
@@ -60,6 +61,7 @@ An android application that gives you custom quests to inspire your run.
 
 - Others
   - [ ] Maybe add prompts to generate stories for other forms of exersize. bicycling or lifting weights
+
 
 
 
