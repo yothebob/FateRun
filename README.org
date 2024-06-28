@@ -22,22 +22,23 @@ An android application that gives you custom quests to inspire your run.
   - [X] Login endpoint
   - [X] quest list by popularity
   - [X] quest list by genre
-  - [ ] impliment users/runs tracking 
+  - [X] impliment users/runs tracking
+  - [ ] Impliment openai tts and ability to use default oor premium openai
 
 - Backend
   
-  - [ ] Finish vagrant dev setup (maybe have a proxy for ollama, so the dev box does not have to run it)
   - [X] Add a function to merge paragraphs that are less then x chars long into the previous paragraph
   - [X] Add quest name generation to prompt, and save as quest name
   - [X] Move generated tts mp3's to a subfolder in static
   - [X] Add Prompt listing
   - [ ] Add tts voice selection
-  - [ ] see if its possible to move to golang/clisp/elixir
+  - [ ] new django command to load statif files into django static objects that will point to dialog lists
   - [ ] Finish lib to select music most like prompt
   - [X] Finish code/file cleanup/consolidation
   - [X] Add model to store music files and music metadata/tags?
   - [X] add new model adventure that links quests together in linked list fashion
-  - [ ] new django command to load statif files into django static objects that will point to dialog lists
+  - [ ] Finish vagrant dev setup (maybe have a proxy for ollama, so the dev box does not have to run it)
+  - [ ] see if its possible to move to golang/clisp/elixir
     
 - Site
 
