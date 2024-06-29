@@ -1,6 +1,12 @@
 import base64
 import json
 import random
+from common.models import Tag
+
+def get_song_genre_intermissions(setting):
+    song_type = Tag.objects.filter(prompt=self.setting).first()
+    return [f"{STATIC_MUSIC_PATH}{song_type}/{name}" for name in os.listdir(f"{STATIC_MUSIC_PATH}{song_type}")]
+            
 
 def build_final_fstack(dialog_fnames, song_intermissions):
     res = []

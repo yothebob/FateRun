@@ -14,32 +14,7 @@ from common.utils import build_final_fstack, combine_short_dialogs
 
 r = Redis(host='127.0.0.1', port=6379, decode_responses=True)
 q = django_rq.get_queue('generate')
-
-class QuestPrompt():
-
-    song_type_map = {
-        "medieval": "medieval",
-        "scifi": "scifi"
-    }
     
-    def __init__(self, setting="medieval"):
-        self.setting = setting
-        self.song_type_map = {
-            "medieval": ["feudal","medieval","gothic","chivalric","knightly","dark ages","middle ages","arthurian","norman","byzantine","legendary","mythical","sorcery","enchanted","epic","heroic","dragon","quest","castle","magical","elven"],
-            "scifi": ["futuristic","scifi", "speculative","space","cyberpunk","alien","dystopian","extraterrestrial","steampunk","technological","post-apocalyptic","intergalactic","time travel","artificial intelligence","robot","spaceship","virtual reality","utopian","astrobiology","terraforming","quantum"],
-            "western": ["frontier","western","cowboy","wild west","prairie","outlaw","desert","pioneer","rodeo","ranch","gold rush","cattle drive","saloon","homestead","lasso","posse","wagon train","spur","sheriff","six-shooter","horseback"]
-        }
-        
-    def qp_get_song_genre_intermissions(self):
-        # for 
-        song_type = "medieval"# self.song_type_map.get(self.setting, "medieval")
-        return [f"{STATIC_MUSIC_PATH}{song_type}/{name}" for name in os.listdir(f"{STATIC_MUSIC_PATH}{song_type}")]
-
-    
-def get_song_genre_intermissions(setting):
-    qp = QuestPrompt(setting)
-    return qp.qp_get_song_genre_intermissions()
-            
 
 def queued_generate(stringified_data, uuid, setting):
     res = requests.post(GENERATE_ENDPOINT, data=stringified_data)
@@ -48,6 +23,7 @@ def queued_generate(stringified_data, uuid, setting):
     found_quest = Quest.objects.filter(uuid=uuid).first() # for now lets just assume this will be ok
     response_list = list(filter(lambda i: i, res_json["response"].split("\n")))
     found_quest.name = response_list.pop(0).replace('\"','')
+    # idk about storing the result thats alot of data
     found_quest.save()
     response_list = combine_short_dialogs(response_list)
     tts_responses = {}

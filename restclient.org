@@ -44,21 +44,21 @@ POST http://192.168.0.17:8000/api/v0/users/make_prompt/
 content-type: application/json
 authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzIwMDYyMTQ4LCJpYXQiOjE3MTk2MzAxNDgsImp0aSI6ImExNDVmZWRlYTZhYTQ3Mjc5YjQyYTFmOWJlMzQxNTI4IiwidXNlcl9pZCI6MX0.d2Bz9Gj2hzChxMfs4hEI3drsRyMNdEqtMdxGeNUJ98k
 {
-"public": false,
+"public": true,
  "motivation_freq": "low",
- "setting": "medieval dungeons and dragons",
- "story_length": 300,
+ "setting": "medieval",
+ "story_length": 300
 }
 #+end_src
 
 #+RESULTS:
 #+BEGIN_SRC js
 {
-  "ticket": "6ca423ef-f702-42fe-9506-978c10a7c374"
+  "ticket": "10c70541-b3b0-479b-84b4-b6e30b401542"
 }
 // POST http://192.168.0.17:8000/api/v0/users/make_prompt/
 // HTTP/1.1 200 OK
-// Date: Sat, 29 Jun 2024 03:02:57 GMT
+// Date: Sat, 29 Jun 2024 03:26:31 GMT
 // Server: WSGIServer/0.2 CPython/3.12.3
 // Content-Type: application/json
 // Allow: POST
@@ -67,7 +67,7 @@ authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiY
 // X-Content-Type-Options: nosniff
 // Referrer-Policy: same-origin
 // Cross-Origin-Opener-Policy: same-origin
-// Request duration: 0.018663s
+// Request duration: 0.016242s
 #+END_SRC
 
 * List Public Quests
@@ -102,7 +102,7 @@ GET http://192.168.0.17:8000/api/v0/quests/public_quests/
 ]
 // GET http://192.168.0.17:8000/api/v0/quests/public_quests/
 // HTTP/1.1 200 OK
-// Date: Sat, 29 Jun 2024 03:03:43 GMT
+// Date: Sat, 29 Jun 2024 03:27:48 GMT
 // Server: WSGIServer/0.2 CPython/3.12.3
 // Content-Type: application/json
 // Allow: GET, HEAD
@@ -111,7 +111,7 @@ GET http://192.168.0.17:8000/api/v0/quests/public_quests/
 // X-Content-Type-Options: nosniff
 // Referrer-Policy: same-origin
 // Cross-Origin-Opener-Policy: same-origin
-// Request duration: 0.007124s
+// Request duration: 0.010120s
 #+END_SRC
 
 * highest rated Quests

@@ -12,7 +12,7 @@ from rest_framework.exceptions import ParseError
 from rest_framework.decorators import renderer_classes, action
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from common.models import Quest, DialogList, QuestRun
+from common.models import Quest, DialogList, QuestRun, Tag
 from common.serializers import UserSerializer
 from common.quest_prompt_generator import Prompt
 
@@ -46,7 +46,15 @@ class UserViewSet(viewsets.ModelViewSet):
         make_public = request.data.pop("public", False)
         prompt = Prompt(**request.data)
         req_ticket = uuid.uuid4()
-        new_quest = Quest(uuid=str(req_ticket), creator=request.user, public=make_public, rating=0.0, genre=request.data.get("setting")) # todo: extract genre from setting
+        found_tag = Tag.objects.filter(prompt=request.data.get("setting")).first()
+        if not found_tag:
+            raise ParseError("Prompt setting not supported")
+        new_quest = Quest(uuid=str(req_ticket),
+                          creator=request.user,
+                          public=make_public,
+                          rating=0.0,
+                          tags=found_tag,
+                          prompt=prompt.generate_prompt()) # todo: extract genre from setting
         new_quest.save()
         prompt.queue_generation(str(req_ticket))
         return Response({"ticket": req_ticket})
