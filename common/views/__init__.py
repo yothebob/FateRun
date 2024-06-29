@@ -1,1 +1,2 @@
-from .views import *
+from .quest_views import *
+from .user_views import *

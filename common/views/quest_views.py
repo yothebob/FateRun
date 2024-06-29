@@ -29,13 +29,13 @@ class QuestViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['GET'])
     def highest_rated_quests(self, request):
-        high_rated_queryset = self.get_queryset().filter(public=True).order_by("-ranking")
+        high_rated_queryset = self.get_queryset().filter(public=True).order_by("-rating")
         serializer = QuestSerializer(high_rated_queryset, many=True)
         return Response(serializer.data)
 
     @action(detail=False, methods=['GET'])
     def quests_by_genre(self, request):
-        genre = request.args.get("genre", "medieval")
+        genre = request.query_params.get("genre", "medieval")
         public_queryset = self.get_queryset().filter(public=True, genre=genre)
         serializer = QuestSerializer(public_queryset, many=True)
         return Response(serializer.data)
