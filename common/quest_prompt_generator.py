@@ -16,7 +16,7 @@ r = Redis(host='127.0.0.1', port=6379, decode_responses=True)
 q = django_rq.get_queue('generate')
     
 
-def queued_generate(stringified_data, uuid, setting):
+def queued_generate(stringified_data, uuid, setting, voice):
     res = requests.post(GENERATE_ENDPOINT, data=stringified_data)
     res_json = res.json()
     obj = stream_elements.StreamElements()
@@ -31,8 +31,7 @@ def queued_generate(stringified_data, uuid, setting):
         cleaned_name = STATIC_MUSIC_PATH + DIALOG_FOLDER + f"{uuid[:10]}-{found_quest.name.replace(' ', '')}-{idx}" + ".mp3"
         tts_responses[cleaned_name] = dialog
     for fname, dialog in tts_responses.items():
-        # Custom Voice
-        data = obj.requestTTS(dialog, 'Matthew')
+        data = obj.requestTTS(dialog, voice)
         with open(fname, '+wb') as file:
             file.write(data)
     song_intermissions = get_song_genre_intermissions(setting)
@@ -49,25 +48,34 @@ class Prompt:
 
     templates = []
     motivation_multiplier = ["None", "low", "medium", "high"]
+    voice_options = {
+        "local": ["Matthew"],
+        "openai": ["alloy"]
+    }
     
     def __init__(self, setting: str, story_length: int, motivation_freq: str):
         self.perspective = "first person point of view"
         self.motivation = self.motivation_multiplier.index(motivation_freq)
         self.setting = setting
         self.story_length = story_length
-        
+        self.ai_tool = "local"
+        self.voice = "Matthew"
+        if  self.voice not in self.voice_options[self.ai_tool]:
+            raise Exception("Voice not supported for that generation tool.")
+
     def generate_prompt(self):
         motivation_times = "tbd"
         selected_prompt = random.choice(STORY_PROMPTS)
         return selected_prompt.format(self.perspective, self.story_length, self.setting)
     
     def queue_generation(self, uuid):
-        data = {
-            "model": "llama3",
-            "prompt": self.generate_prompt(),
-            "stream": False
-        }
-        q.enqueue(queued_generate, json.dumps(data), uuid, self.setting)
+        if self.ai_tool == "local":
+            data = {
+                "model": "llama3",
+                "prompt": self.generate_prompt(),
+                "stream": False
+            }
+        q.enqueue(queued_generate, json.dumps(data), uuid, self.setting, self.voice)
         return True
 
 

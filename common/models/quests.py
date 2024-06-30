@@ -11,3 +11,4 @@ class Quest(models.Model):
     creator = models.ForeignKey("auth.User", on_delete=models.SET_NULL, blank=True, null=True, related_name="user_quests")
     next_quest = models.ForeignKey("Quest", on_delete=models.SET_NULL, blank=True, null=True, related_name="previous_quest")
     tags = models.ForeignKey("Tag", on_delete=models.SET_NULL, blank=True, null=True, related_name="quest_tags")
+

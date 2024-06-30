@@ -13,7 +13,6 @@ class QuestSerializer(serializers.ModelSerializer):
         if len(quest_runs) > 0:
             return round(sum(quest_runs)/ len(quest_runs), 1)
         return 0.0
-        
 
 
     def get_dialogs(self, obj):
