@@ -12,7 +12,7 @@ from rest_framework.exceptions import ParseError
 from rest_framework.decorators import renderer_classes, action
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from common.models import Quest, DialogList, QuestRun
+from common.models import Quest, DialogList, QuestRun, Tag
 from common.serializers import UserSerializer
 from common.quest_prompt_generator import Prompt
 
@@ -44,9 +44,20 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['POST'])
     def make_prompt(self, request):
         make_public = request.data.pop("public", False)
-        prompt = Prompt(**request.data)
+        try:
+            prompt = Prompt(**request.data)
+        except Exception as e:
+            raise ParseError(e)
         req_ticket = uuid.uuid4()
-        new_quest = Quest(uuid=str(req_ticket), creator=request.user, public=make_public, rating=0.0)
+        found_tag = Tag.objects.filter(prompt=request.data.get("setting")).first()
+        if not found_tag:
+            raise ParseError("Prompt setting not supported")
+        new_quest = Quest(uuid=str(req_ticket),
+                          creator=request.user,
+                          public=make_public,
+                          rating=0.0,
+                          tags=found_tag,
+                          prompt=prompt.generate_prompt()) # todo: extract genre from setting
         new_quest.save()
         prompt.queue_generation(str(req_ticket))
         return Response({"ticket": req_ticket})
@@ -54,7 +65,14 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['POST'])
     def complete_quest(self, request):
         data = request.data
+        found_quest = Quest.objects.filter(id=data["quest"]).first()
+        if not found_quest:
+            raise ParseError("Quest not found.")
         new_run = QuestRun(**data)
         new_run.save()
+        quest_runs = QuestRun.objects.filter(quest__id=found_quest.id, rating__gte=1.0).values_list("rating", flat=True)
+        if len(quest_runs) > 0:
+            found_quest.rating = round(sum(quest_runs)/ len(quest_runs), 1)
+            found_quest.save()
         return Response({"created": True})
 

@@ -10,7 +10,9 @@ class QuestSerializer(serializers.ModelSerializer):
 
     def get_rating(self, obj):
         quest_runs = QuestRun.objects.filter(quest__id=obj.id, rating__gte=1.0).values_list("rating", flat=True)
-        return round(sum(quest_runs)/ len(quest_runs), 1)
+        if len(quest_runs) > 0:
+            return round(sum(quest_runs)/ len(quest_runs), 1)
+        return 0.0
 
 
     def get_dialogs(self, obj):
