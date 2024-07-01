@@ -40,25 +40,27 @@ content-type: application/json
 
 * Create Quest 
 #+begin_src restclient
-POST http://192.168.0.17:8000/api/v0/users/make_prompt/
-content-type: application/json
-authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzIwMDYyMTQ4LCJpYXQiOjE3MTk2MzAxNDgsImp0aSI6ImExNDVmZWRlYTZhYTQ3Mjc5YjQyYTFmOWJlMzQxNTI4IiwidXNlcl9pZCI6MX0.d2Bz9Gj2hzChxMfs4hEI3drsRyMNdEqtMdxGeNUJ98k
-{
-"public": true,
- "motivation_freq": "low",
- "setting": "medieval",
- "story_length": 300
-}
+  POST http://192.168.0.17:8000/api/v0/users/make_prompt/
+  content-type: application/json
+  authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzIwMDYyMTQ4LCJpYXQiOjE3MTk2MzAxNDgsImp0aSI6ImExNDVmZWRlYTZhYTQ3Mjc5YjQyYTFmOWJlMzQxNTI4IiwidXNlcl9pZCI6MX0.d2Bz9Gj2hzChxMfs4hEI3drsRyMNdEqtMdxGeNUJ98k
+  {
+  "public": true,
+   "motivation_freq": "low",
+   "setting": "medieval",
+   "story_length": 300,
+   "ai_tool": "local",
+   "voice": "Ivy"
+  }
 #+end_src
 
 #+RESULTS:
 #+BEGIN_SRC js
 {
-  "ticket": "10c70541-b3b0-479b-84b4-b6e30b401542"
+  "ticket": "ac3e0177-5a70-45b1-8f10-a58817659d38"
 }
 // POST http://192.168.0.17:8000/api/v0/users/make_prompt/
 // HTTP/1.1 200 OK
-// Date: Sat, 29 Jun 2024 03:26:31 GMT
+// Date: Mon, 01 Jul 2024 03:46:50 GMT
 // Server: WSGIServer/0.2 CPython/3.12.3
 // Content-Type: application/json
 // Allow: POST
@@ -67,7 +69,7 @@ authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiY
 // X-Content-Type-Options: nosniff
 // Referrer-Policy: same-origin
 // Cross-Origin-Opener-Policy: same-origin
-// Request duration: 0.016242s
+// Request duration: 0.022070s
 #+END_SRC
 
 * List Public Quests

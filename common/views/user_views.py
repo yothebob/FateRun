@@ -44,7 +44,10 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['POST'])
     def make_prompt(self, request):
         make_public = request.data.pop("public", False)
-        prompt = Prompt(**request.data)
+        try:
+            prompt = Prompt(**request.data)
+        except Exception as e:
+            raise ParseError(e)
         req_ticket = uuid.uuid4()
         found_tag = Tag.objects.filter(prompt=request.data.get("setting")).first()
         if not found_tag:

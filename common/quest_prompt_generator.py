@@ -8,18 +8,20 @@ from pyt2s.services import stream_elements
 from .varz import GENERATE_ENDPOINT, STATIC_HOSTNAME, STATIC_MUSIC_PATH, STORY_PROMPTS, DIALOG_FOLDER
 from common.models import Quest, DialogList
 import os
+from django.conf import settings
 import random
 import django_rq
-from common.utils import build_final_fstack, combine_short_dialogs
+from openai import OpenAI
+from common.utils import build_final_fstack, combine_short_dialogs, get_song_genre_intermissions
 
 r = Redis(host='127.0.0.1', port=6379, decode_responses=True)
 q = django_rq.get_queue('generate')
     
 
-def queued_generate(stringified_data, uuid, setting, voice):
+def queued_generate(stringified_data, uuid, setting, voice, use_openai=False):
     res = requests.post(GENERATE_ENDPOINT, data=stringified_data)
     res_json = res.json()
-    obj = stream_elements.StreamElements()
+    obj = stream_elements.StreamElements() if not use_openai else OpenAI(api_key=settings.OPENAI_KEY)
     found_quest = Quest.objects.filter(uuid=uuid).first() # for now lets just assume this will be ok
     response_list = list(filter(lambda i: i, res_json["response"].split("\n")))
     found_quest.name = response_list.pop(0).replace('\"','')
@@ -31,14 +33,25 @@ def queued_generate(stringified_data, uuid, setting, voice):
         cleaned_name = STATIC_MUSIC_PATH + DIALOG_FOLDER + f"{uuid[:10]}-{found_quest.name.replace(' ', '')}-{idx}" + ".mp3"
         tts_responses[cleaned_name] = dialog
     for fname, dialog in tts_responses.items():
-        data = obj.requestTTS(dialog, voice)
-        with open(fname, '+wb') as file:
-            file.write(data)
+        # Custom Voice
+        if not use_openai:
+            data = obj.requestTTS(dialog, voice)
+            with open(fname, '+wb') as file:
+                file.write(data)
+        else:
+            response = obj.audio.speech.create(
+                model="tts-1",
+                voice=voice,
+                input=dialog,
+            )
+            response.stream_to_file(fname)
     song_intermissions = get_song_genre_intermissions(setting)
     final_file_stack = build_final_fstack(tts_responses.keys(), song_intermissions)
     for idx, filename in enumerate(final_file_stack):
         url = filename.replace(STATIC_MUSIC_PATH,STATIC_HOSTNAME)
-        new_dialog = DialogList(quest=found_quest, index=idx, url=url)
+        new_dialog = DialogList(index=idx, url=url)
+        new_dialog.save()
+        new_dialog.quests.add(found_quest)
         new_dialog.save()
     return True
     
@@ -49,18 +62,33 @@ class Prompt:
     templates = []
     motivation_multiplier = ["None", "low", "medium", "high"]
     voice_options = {
-        "local": ["Matthew"],
-        "openai": ["alloy"]
+        "local": ["Brian",
+                  "Amy",
+                  "Emma",
+                  "Geraint",
+                  "Russell",
+                  "Nicole",
+                  "Joey",
+                  "Justin",
+                  "Matthew",
+                  "Ivy",
+                  "Joanna",
+                  "Kendra",
+                  "Kimberly",
+                  "Salli",
+                  "Raveena"
+                  ],
+        "openai": ["alloy", "echo", "fable", "onyx", "nova", "shimmer"]
     }
     
-    def __init__(self, setting: str, story_length: int, motivation_freq: str):
+    def __init__(self, setting: str, story_length: int, motivation_freq: str, ai_tool = "local", voice = "Matthew"):
         self.perspective = "first person point of view"
         self.motivation = self.motivation_multiplier.index(motivation_freq)
         self.setting = setting
         self.story_length = story_length
-        self.ai_tool = "local"
-        self.voice = "Matthew"
-        if  self.voice not in self.voice_options[self.ai_tool]:
+        self.ai_tool = ai_tool or "local"
+        self.voice = voice or "Matthew"
+        if self.voice not in self.voice_options[self.ai_tool]:
             raise Exception("Voice not supported for that generation tool.")
 
     def generate_prompt(self):
@@ -75,7 +103,13 @@ class Prompt:
                 "prompt": self.generate_prompt(),
                 "stream": False
             }
-        q.enqueue(queued_generate, json.dumps(data), uuid, self.setting, self.voice)
+        else: # TODO: integrate openai prompt res
+            data = {
+                "model": "llama3",
+                "prompt": self.generate_prompt(),
+                "stream": False
+            }
+        q.enqueue(queued_generate, json.dumps(data), uuid, self.setting, self.voice, self.ai_tool == "openai")
         return True
 
 
