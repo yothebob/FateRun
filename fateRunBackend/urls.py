@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from common.views import UserViewSet, QuestViewSet
+from common.views import UserViewSet, QuestViewSet, QuestRunViewSet
 from rest_framework import routers
 from django.urls import path, include
 from rest_framework_simplejwt.views import (
@@ -27,6 +27,7 @@ from rest_framework_simplejwt.views import (
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'quests', QuestViewSet)
+router.register(r'questruns', QuestRunViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

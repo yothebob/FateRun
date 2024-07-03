@@ -162,6 +162,40 @@ authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiY
 // Request duration: 0.060031s
 #+END_SRC
 
+* complete quest
+#+begin_src restclient
+POST http://192.168.0.17:8000/api/v0/users/complete_quest/
+content-type: application/json
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzIwMDYyMTQ4LCJpYXQiOjE3MTk2MzAxNDgsImp0aSI6ImExNDVmZWRlYTZhYTQ3Mjc5YjQyYTFmOWJlMzQxNTI4IiwidXNlcl9pZCI6MX0.d2Bz9Gj2hzChxMfs4hEI3drsRyMNdEqtMdxGeNUJ98k
+
+{
+"quest": 46,
+"completed": true,
+"miles": 2.0,
+"rating": 5.0
+}
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC js
+{
+  "created": true
+}
+// POST http://192.168.0.17:8000/api/v0/users/complete_quest/
+// HTTP/1.1 200 OK
+// Date: Wed, 03 Jul 2024 03:23:55 GMT
+// Server: WSGIServer/0.2 CPython/3.12.3
+// Content-Type: application/json
+// Allow: POST
+// X-Frame-Options: DENY
+// Content-Length: 16
+// X-Content-Type-Options: nosniff
+// Referrer-Policy: same-origin
+// Cross-Origin-Opener-Policy: same-origin
+// Request duration: 0.020356s
+#+END_SRC
+
+
 * quests by genre
 #+begin_src restclient
 GET http://192.168.0.17:8000/api/v0/quests/quests_by_genre?genre=medieval
@@ -185,4 +219,55 @@ authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiY
 // Referrer-Policy: same-origin
 // Cross-Origin-Opener-Policy: same-origin
 // Request duration: 0.020657s
+#+END_SRC
+
+* app dashboard
+
+todo
+
+* list quest runs
+
+#+begin_src restclient
+GET http://192.168.0.17:8000/api/v0/questruns/
+content-type: application/json
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzIwMDYyMTQ4LCJpYXQiOjE3MTk2MzAxNDgsImp0aSI6ImExNDVmZWRlYTZhYTQ3Mjc5YjQyYTFmOWJlMzQxNTI4IiwidXNlcl9pZCI6MX0.d2Bz9Gj2hzChxMfs4hEI3drsRyMNdEqtMdxGeNUJ98k
+
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC js
+[
+  {
+    "id": 2,
+    "quest": 46,
+    "completed": true,
+    "miles": 2.0,
+    "start_time": null,
+    "end_time": null,
+    "user": 1,
+    "rating": 5.0
+  },
+  {
+    "id": 1,
+    "quest": 46,
+    "completed": true,
+    "miles": 2.0,
+    "start_time": null,
+    "end_time": null,
+    "user": 1,
+    "rating": 3.0
+  }
+]
+// GET http://192.168.0.17:8000/api/v0/questruns/
+// HTTP/1.1 200 OK
+// Date: Wed, 03 Jul 2024 03:24:18 GMT
+// Server: WSGIServer/0.2 CPython/3.12.3
+// Content-Type: application/json
+// Allow: GET, HEAD
+// X-Frame-Options: DENY
+// Content-Length: 211
+// X-Content-Type-Options: nosniff
+// Referrer-Policy: same-origin
+// Cross-Origin-Opener-Policy: same-origin
+// Request duration: 0.003597s
 #+END_SRC

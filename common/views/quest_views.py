@@ -6,7 +6,7 @@ from rest_framework.exceptions import ParseError
 from rest_framework.decorators import renderer_classes, action
 
 from common.models import Quest
-from common.serializers import QuestSerializer
+from common.serializers import QuestSerializer, QuestListSerializer
 
     
 class QuestViewSet(viewsets.ModelViewSet):
@@ -14,6 +14,12 @@ class QuestViewSet(viewsets.ModelViewSet):
     queryset = Quest.objects.order_by("-id")
     serializer_class = QuestSerializer
     renderer_classes = [JSONRenderer]
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return QuestListSerializer
+        else:
+            return QuestSerializer
 
     
     def retrieve(self, request, pk=None):
