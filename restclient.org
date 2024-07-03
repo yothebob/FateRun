@@ -1,7 +1,7 @@
 * login
 
 #+begin_src restclient
-POST https://questrunner.bbrodrickbserver.com/api/token/
+POST http://192.168.0.17:8000/api/v0/users/login/
 content-type: application/json
 
 {
@@ -9,33 +9,6 @@ content-type: application/json
 "password": "password"
 }	      
 #+end_src
-
-#+RESULTS:
-#+BEGIN_SRC js
-{
-  "refresh": "",
-  "access": ""
-}
-// POST https://questrunner.bbrodrickbserver.com/api/token/
-// HTTP/1.1 200 OK
-// Date: Tue, 25 Jun 2024 03:14:55 GMT
-// Content-Type: application/json
-// Transfer-Encoding: chunked
-// Connection: keep-alive
-// allow: POST, OPTIONS
-// cross-origin-opener-policy: same-origin
-// referrer-policy: same-origin
-// vary: Accept
-// x-content-type-options: nosniff
-// x-frame-options: DENY
-// CF-Cache-Status: DYNAMIC
-// Report-To: {"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v4?s=PKF1B0UiRHhXwUS9yhXHUdtQmEoA2v4IgewLQz6AN9Z%2FJegP0%2B3TIyf4xJwsTP7fy6iF4qYdwJbwI2CdSaMyL1R6%2BMQWI%2BzypB%2FZLb8%2FPvODH56qK8ldDOJRaCe3TI%2F4y9ftL7eR%2BBW3qd0EuBAMSKAAskFBIH%2BwW8SVM5jzXQ%3D%3D"}],"group":"cf-nel","max_age":604800}
-// NEL: {"success_fraction":0,"report_to":"cf-nel","max_age":604800}
-// Server: cloudflare
-// CF-RAY: 8991ca45dd165eeb-PDX
-// alt-svc: h3=":443"; ma=86400
-// Request duration: 0.641036s
-#+END_SRC
 
 
 * Create Quest 

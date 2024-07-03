@@ -31,9 +31,9 @@ An android application that gives you custom quests to inspire your run.
   - [X] Add quest name generation to prompt, and save as quest name
   - [X] Move generated tts mp3's to a subfolder in static
   - [X] Add Prompt listing
-  - [ ] Add tts voice selection
+  - [X] Add tts voice selection
   - [ ] new django command to load statif files into django static objects that will point to dialog lists
-  - [ ] Finish lib to select music most like prompt
+  - [X] Finish lib to select music most like prompt
   - [X] Finish code/file cleanup/consolidation
   - [X] Add model to store music files and music metadata/tags?
   - [X] add new model adventure that links quests together in linked list fashion
@@ -46,7 +46,7 @@ An android application that gives you custom quests to inspire your run.
   - [ ] on a site add the ability to make your own prompts from your own music/ custom written dialog.
 
 - Genres
-  - [ ] Scifi
+  - [X] Scifi
   - [ ] western
   - [ ] noir
   - [ ] world war 2
