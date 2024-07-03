@@ -65,9 +65,11 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['POST'])
     def complete_quest(self, request):
         data = request.data
+        data["user"] = request.user
         found_quest = Quest.objects.filter(id=data["quest"]).first()
         if not found_quest:
             raise ParseError("Quest not found.")
+        data["quest"] = found_quest
         new_run = QuestRun(**data)
         new_run.save()
         quest_runs = QuestRun.objects.filter(quest__id=found_quest.id, rating__gte=1.0).values_list("rating", flat=True)

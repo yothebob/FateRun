@@ -1,19 +1,11 @@
 from django.urls import path, include
-from common.models import Quest, QuestRun
+from common.models import Quest
 from rest_framework import serializers
 
 # Serializers define the API representation.
 class QuestSerializer(serializers.ModelSerializer):
 
     dialogs = serializers.SerializerMethodField()
-    rating = serializers.SerializerMethodField()
-
-    def get_rating(self, obj):
-        quest_runs = QuestRun.objects.filter(quest__id=obj.id, rating__gte=1.0).values_list("rating", flat=True)
-        if len(quest_runs) > 0:
-            return round(sum(quest_runs)/ len(quest_runs), 1)
-        return 0.0
-
 
     def get_dialogs(self, obj):
         res = []
@@ -32,6 +24,17 @@ class QuestSerializer(serializers.ModelSerializer):
             "name",
             "dialogs",
             "creator",
+            "rating",
+            "public"
+        ]
+
+class QuestListSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Quest
+        fields = [
+            "id",
+            "name",
             "rating",
             "public"
         ]
