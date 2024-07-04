@@ -1,3 +1,35 @@
+* create user
+#+begin_src restclient
+POST http://192.168.0.17:8000/api/v0/users/create_user/
+content-type: application/json
+
+{
+"username": "username",
+"password": "password"
+}	      
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC js
+{
+  "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzIwNDk1ODQyLCJpYXQiOjE3MjAwNjM4NDIsImp0aSI6IjQ4ZTAyNTU2N2VkNDRhM2FhNmViY2I0ZjVkN2I2MWEwIiwidXNlcl9pZCI6Mn0.YIl8jGU3Vdozbsa8_2BfqMSDa-xsVMRq_gRwzOZAvEA",
+  "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcyMDQ5NTg0MiwiaWF0IjoxNzIwMDYzODQyLCJqdGkiOiJiMDkzMDkyMGRmZTk0MWUyYTNlMzYwZmM1Njk0NGZmZCIsInVzZXJfaWQiOjJ9.ODzthWxNfxG6K2aLipWFkFD1c98tUfnnG2aI1MaWKtY"
+}
+// POST http://192.168.0.17:8000/api/v0/users/create_user/
+// HTTP/1.1 200 OK
+// Date: Thu, 04 Jul 2024 03:30:42 GMT
+// Server: WSGIServer/0.2 CPython/3.12.3
+// Content-Type: application/json
+// Allow: POST
+// X-Frame-Options: DENY
+// Content-Length: 483
+// X-Content-Type-Options: nosniff
+// Referrer-Policy: same-origin
+// Cross-Origin-Opener-Policy: same-origin
+// Request duration: 0.236503s
+#+END_SRC
+
+
 * login
 
 #+begin_src restclient
