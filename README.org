@@ -4,40 +4,23 @@ An android application that gives you custom quests to inspire your run.
 
 * TODO Things
 - App
-  - [ ] Login page
-  - [ ] List public quests
   - [ ] List personal quests
   - [ ] create a quest page
-  - [ ] gps
-  - [ ] run time
-  - [ ] impliment voyager viewmodel for state safety and rerouting
+  - [ ] gps/ custom map markings (from locations in story)
   - [ ] push up git repo
+  - [ ] finish complete run page
   - [ ] add firebase notifications to let you know when your prompt is done
   - [ ] show the details of the dialog/music you are on currently.
-  - [ ] impliment view models to hold state in app.
     
 - API
-  - [X] Add quest rating and public to serializer/views
-  - [X] Add quest rating api call
-  - [X] Login endpoint
-  - [X] quest list by popularity
-  - [X] quest list by genre
-  - [X] impliment users/runs tracking
-  - [ ] Impliment openai tts and ability to use default oor premium openai
-
+  - [ ] Serve up map tiles based off tags
+    
 - Backend
-  
-  - [X] Add a function to merge paragraphs that are less then x chars long into the previous paragraph
-  - [X] Add quest name generation to prompt, and save as quest name
-  - [X] Move generated tts mp3's to a subfolder in static
-  - [X] Add Prompt listing
-  - [X] Add tts voice selection
+  - [ ] Create a story location finder (read story find location mentioned)
+  - [ ] Impliment a non AI story generator
+  - [ ] Add map generation (per quest/adventure)
+  - [ ] make sure song dialogs are not remade
   - [ ] new django command to load statif files into django static objects that will point to dialog lists
-  - [X] Finish lib to select music most like prompt
-  - [X] Finish code/file cleanup/consolidation
-  - [X] Add model to store music files and music metadata/tags?
-  - [X] add new model adventure that links quests together in linked list fashion
-  - [ ] Finish vagrant dev setup (maybe have a proxy for ollama, so the dev box does not have to run it)
   - [ ] see if its possible to move to golang/clisp/elixir
     
 - Site
