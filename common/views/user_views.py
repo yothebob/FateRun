@@ -42,6 +42,16 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response({"access": str(new_tokens.access_token), "refresh": str(new_tokens)})
     
     @action(detail=False, methods=['POST'])
+    def create_user(self, request):
+        data = request.data
+        if not data.get("username") or not data.get("password"):
+            raise ParseError("Missing details")
+        user = User.objects.create_user(data.get("username"), data.get("email", ""), data.get("password"))
+        user.save()
+        new_tokens = RefreshToken.for_user(user)
+        return Response({"access": str(new_tokens.access_token), "refresh": str(new_tokens)})
+    
+    @action(detail=False, methods=['POST'])
     def make_prompt(self, request):
         make_public = request.data.pop("public", False)
         try:
