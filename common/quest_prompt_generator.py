@@ -6,18 +6,18 @@ from redis import Redis
 from rq import Queue
 from pyt2s.services import stream_elements
 from .varz import GENERATE_ENDPOINT, STATIC_HOSTNAME, STATIC_MUSIC_PATH, STORY_PROMPTS, DIALOG_FOLDER
-from common.models import Quest, DialogList
+from common.models import Quest, DialogList, Dialog
 import os
 from django.conf import settings
 import random
 import django_rq
 from openai import OpenAI
-from common.utils import build_final_fstack, combine_short_dialogs, get_song_genre_intermissions
+from common.utils import build_final_fstack, combine_short_dialogs, get_song_genre_intermissions, create_dialog_list
 
 r = Redis(host='127.0.0.1', port=6379, decode_responses=True)
 q = django_rq.get_queue('generate')
-    
 
+        
 def queued_generate(stringified_data, uuid, setting, voice, use_openai=False):
     res = requests.post(GENERATE_ENDPOINT, data=stringified_data)
     res_json = res.json()
@@ -29,15 +29,16 @@ def queued_generate(stringified_data, uuid, setting, voice, use_openai=False):
     found_quest.save()
     response_list = combine_short_dialogs(response_list)
     tts_responses = {}
+    new_dialog_list = []
     for idx, dialog in enumerate(response_list):
         cleaned_name = STATIC_MUSIC_PATH + DIALOG_FOLDER + f"{uuid[:10]}-{found_quest.name.replace(' ', '')}-{idx}" + ".mp3"
         tts_responses[cleaned_name] = dialog
     for fname, dialog in tts_responses.items():
         # Custom Voice
         if not use_openai:
-            data = obj.requestTTS(dialog, voice)
+            response = obj.requestTTS(dialog, voice)
             with open(fname, '+wb') as file:
-                file.write(data)
+                file.write(response)
         else:
             response = obj.audio.speech.create(
                 model="tts-1",
@@ -45,14 +46,14 @@ def queued_generate(stringified_data, uuid, setting, voice, use_openai=False):
                 input=dialog,
             )
             response.stream_to_file(fname)
-    song_intermissions = get_song_genre_intermissions(setting)
-    final_file_stack = build_final_fstack(tts_responses.keys(), song_intermissions)
-    for idx, filename in enumerate(final_file_stack):
-        url = filename.replace(STATIC_MUSIC_PATH,STATIC_HOSTNAME)
-        new_dialog = DialogList(index=idx, url=url)
+        url = fname.replace(STATIC_MUSIC_PATH,STATIC_HOSTNAME)
+        new_dialog = Dialog(quest=found_quest, index=len(new_dialog_list), url=url, tags=found_quest.tags)
         new_dialog.save()
-        new_dialog.quests.add(found_quest)
-        new_dialog.save()
+        new_dialog_list.append(new_dialog)
+    song_intermissions = get_song_genre_intermissions(setting) #TODO: create a django command to load songs in.
+    final_file_stack = build_final_fstack(new_dialog_list, song_intermissions)
+    dlist_json = create_dialog_list(final_file_stack)
+    quest_dlist = DialogList(quest=found_quest, dlist=json.dumps(dlist_json))
     return True
     
 

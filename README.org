@@ -5,21 +5,26 @@ An android application that gives you custom quests to inspire your run.
 * TODO Things
 - App
   - [ ] List personal quests
-  - [ ] create a quest page
-  - [ ] gps/ custom map markings (from locations in story)
-  - [ ] push up git repo
-  - [ ] finish complete run page
-  - [ ] add firebase notifications to let you know when your prompt is done
-  - [ ] show the details of the dialog/music you are on currently.
+  - [ ] Create a quest page
+  - [ ] Gps/ custom map markings (from locations in story)
+  - [ ] Push up git repo
+  - [ ] Finish complete run page
+  - [ ] Add a page to list out tag type songs to just stream music for run.
+  - [ ] Add firebase notifications to let you know when your prompt is done
+  - [ ] Show the details of the dialog/music you are on currently.
     
 - API
-  - [ ] Serve up map tiles based off tags
+  - [ ] Reuse songs in dialog list
+  - [ ] Make sure dialog list saves name, tag, author.. Or maybe split up songs from dialogs list and glue them together on serialization
+  - [ ] songs in a quest should not double up, it should at least pick one of every song before cycling back through. 
+  - [ ] Serve up map tiles based off tags/ or have a go exe to generate map array AND new map image.
+  - [ ] FIX BUG, dialog list url is saving wrong because tag.__str__ is not correct, it needs to be .name.. I think its fixed but not prod.
     
 - Backend
   - [ ] Create a story location finder (read story find location mentioned)
   - [ ] Impliment a non AI story generator
+  - [ ] add images to song dialog lists
   - [ ] Add map generation (per quest/adventure)
-  - [ ] make sure song dialogs are not remade
   - [ ] new django command to load statif files into django static objects that will point to dialog lists
   - [ ] see if its possible to move to golang/clisp/elixir
     
