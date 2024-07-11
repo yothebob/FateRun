@@ -1,0 +1,67 @@
+* clauses
+indenpendent clause structure:
+(subject (AKA noun)) (verb) (optional noun/adjective)
+'He went to the park'
+
+relative clause: (type of indenpendent clause that interjects a dependent clause in a indenpendent clause)
+'the rat that john saw yesterday was in the kitchen earlier.'
+
+* sentance types:
+
+simple: independent clause
+'I kicked the ball'
+
+compound: 2 or more independent clauses
+'I kicked the ball, and it hit Tom'
+
+complex: 1 indenpendent clause and 1 or more dependent clauses
+'Tom cried because the ball hit him'
+
+compount-complex: 2 or more independent clauses & 1 or more dependent clauses
+'Tom cried because the ball hit him, and I apologized immediately'
+
+common indenpendent clause junctions
+and, so, yet, or, for, but, nor
+
+tim based indenpendent clause junctions
+after, before, while, when
+* Article:
+
+an article is like an adjective to describe a noun. THE is used for more specific nouns and A/AN is used for more general nouns.
+
+articles are not necessary for:
+- countries
+- cities, towns, state
+- streets
+- lakes
+- languages
+- mountains
+- continents
+- sports
+- school subjects
+
+* verbs
+
+simple present:
+they walk
+
+present perfect:
+they have walked
+
+simple past:
+they walked
+
+past perfect:
+they had walked
+
+future:
+they will walk
+
+future perfect:
+they will have walked
+
+perfects work by adding an auxiliary or auxiliaries to the past principle
+
+common auxiliaries:
+be, being, been, can, do, may, must, could, should, ought, shall, will, would, has, have, had
+
