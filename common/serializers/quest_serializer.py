@@ -1,3 +1,4 @@
+import json
 from django.urls import path, include
 from common.models import Quest
 from rest_framework import serializers
@@ -8,13 +9,7 @@ class QuestSerializer(serializers.ModelSerializer):
     dialogs = serializers.SerializerMethodField()
 
     def get_dialogs(self, obj):
-        res = []
-        for i in obj.dialogs.order_by("index"):
-            if i:
-                res.append(i.url)
-        return res
-
-    
+        return json.loads(obj.dialog_list.dlist)
     
     class Meta:
         model = Quest
