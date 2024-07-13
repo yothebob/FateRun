@@ -14,9 +14,9 @@ An android application that gives you custom quests to inspire your run.
   - [ ] Show the details of the dialog/music you are on currently.
     
 - API
-  - [ ] Reuse songs in dialog list
-  - [ ] Make sure dialog list saves name, tag, author.. Or maybe split up songs from dialogs list and glue them together on serialization
-  - [ ] songs in a quest should not double up, it should at least pick one of every song before cycling back through. 
+  - [X] Reuse songs in dialog list
+  - [X] Make sure dialog list saves name, tag, author.. Or maybe split up songs from dialogs list and glue them together on serialization
+  - [X] songs in a quest should not double up, it should at least pick one of every song before cycling back through. 
   - [ ] Serve up map tiles based off tags/ or have a go exe to generate map array AND new map image.
   - [ ] FIX BUG, dialog list url is saving wrong because tag.__str__ is not correct, it needs to be .name.. I think its fixed but not prod.
     

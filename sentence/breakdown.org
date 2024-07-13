@@ -1,0 +1,22 @@
+* make_introduction
+
+As I sprint through the dense underbrush, my armor clanking against the trees, I can feel the weight of the cursed forest bearing down on me. The villagers called it \"Wychwood's Wrath\" – a place where the very land itself seemed to conspire against those who dared enter.
+** BreakDown
++ noun(narrator) verb(person) preposition->adjective->noun(thing), narrators-noun(object) verb(thing) preposition->noun(thing), noun(narrator) verb(person) preposition->noun(count?) preposition->noun(place) (bearing down?) (noun)narrator. noun(subject, general) verb(person) noun(proper, place) - noun(subject, place) adverb noun(place) verb verb preposition noun verb
+
++ indendent clause, indendent clause, indendent clause. indendent clause - dependant clause?
+
+
+
+
+	
+        My name is Edwin, and I'm a Knight of St. Michael's Order. Our order has been tasked with uncovering the source of the dark magic plaguing our lands. Legends speak of an ancient sorcerer, Azrael, who once dwelled within these woods, wielding powers beyond mortal comprehension. Some say he still walks among the trees, seeking revenge on those who would seek to undo his work.
+
+* make_rise
+        I've heard whispers of a hidden temple deep within Wychwood's Wrath, where Azrael's most powerful artifacts lie in wait. My mission is to find it before the forces of darkness do.
+
+        As I burst through a thicket of blackthorn, a figure emerges from the shadows – a hooded woman, her eyes burning with an otherworldly intensity. She speaks in hushed tones, warning me of the dangers ahead: \"Turn back now, Edwin, while you still can.\"
+
+        But I'm driven by duty and a hint of curiosity. The forest seems to grow darker, the air thickening with malevolent energy. I push on, following a narrow path that winds deeper into the woods.
+* make_climax
+        Suddenly, the trees part, revealing a clearing bathed in an eerie, pulsing light. In its center stands a massive stone statue of Azrael himself, his eyes aglow with an unholy power. The woman's words echo in my mind: \"This is where the cursed forest begins.\"
