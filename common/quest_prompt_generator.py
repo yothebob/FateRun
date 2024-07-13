@@ -54,6 +54,7 @@ def queued_generate(stringified_data, uuid, setting, voice, use_openai=False):
     final_file_stack = build_final_fstack(new_dialog_list, song_intermissions)
     dlist_json = create_dialog_list(final_file_stack)
     quest_dlist = DialogList(quest=found_quest, dlist=json.dumps(dlist_json))
+    quest_dlist.save()
     return True
     
 
