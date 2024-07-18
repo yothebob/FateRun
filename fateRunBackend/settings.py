@@ -155,3 +155,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 try:
     from .platform_settings import *
+except:
+    pass

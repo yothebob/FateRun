@@ -2,6 +2,7 @@ from django.db import models
                             
 class Song(models.Model):
     url = models.CharField(max_length=255, default="", blank=False, null=False)
+    fname = models.CharField(max_length=255, default="", blank=False, null=False)
     name = models.CharField(max_length=255, default="", blank=False, null=False)
     author = models.CharField(max_length=255, default="", blank=False, null=False)
     image = models.CharField(max_length=255, default="", blank=False, null=False)
