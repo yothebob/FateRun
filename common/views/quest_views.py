@@ -30,20 +30,20 @@ class QuestViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['GET'])
     def public_quests(self, request):
         public_queryset = self.get_queryset().filter(public=True)
-        serializer = QuestSerializer(public_queryset, many=True)
+        serializer = QuestListSerializer(public_queryset, many=True)
         return Response(serializer.data)
 
     @action(detail=False, methods=['GET'])
     def highest_rated_quests(self, request):
         high_rated_queryset = self.get_queryset().filter(public=True).order_by("-rating")
-        serializer = QuestSerializer(high_rated_queryset, many=True)
+        serializer = QuestListSerializer(high_rated_queryset, many=True)
         return Response(serializer.data)
 
     @action(detail=False, methods=['GET'])
     def quests_by_genre(self, request):
         genre = request.query_params.get("genre", "medieval")
         public_queryset = self.get_queryset().filter(public=True, genre=genre)
-        serializer = QuestSerializer(public_queryset, many=True)
+        serializer = QuestListSerializer(public_queryset, many=True)
         return Response(serializer.data)
 
     # fix this
