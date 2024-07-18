@@ -3,7 +3,6 @@ import base64
 import json
 import random
 from common.models import Tag, Song, Dialog
-from .varz import GENERATE_ENDPOINT, STATIC_HOSTNAME, STATIC_MUSIC_PATH, STORY_PROMPTS, DIALOG_FOLDER
 
 def create_dialog_list(final_file_stack):
     res = []
@@ -26,7 +25,6 @@ def get_song_genre_intermissions(setting):
     song_type = Tag.objects.filter(prompt=setting).first()
     songs = Song.objects.filter(tags=song_type).all()
     return songs
-    # return [f"{STATIC_MUSIC_PATH}{song_type.name}/{name}" for name in os.listdir(f"{STATIC_MUSIC_PATH}{song_type.name}")]
             
 
 def build_final_fstack(dialog_fnames, song_intermissions):

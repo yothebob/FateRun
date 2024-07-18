@@ -38,13 +38,24 @@ class Character:
         "Return 0 (destroyed) - 100 (perfect) based off lowest trait health/hunger"
         return sorted([self.health, self.hunger])[0]
 
-    def reflect(self):
+    def reflect(self, organization: Any = None):
         "Here is where a character will reflect on a their status and make/keep an agenda"
+        # if org and a resource is low, make a missionStatment to increase that resource
+        # if org, check relations. maybe make a missionStatment based off aggression/risk and org relations
+        # compare your current agenda to the ones made above, pick one
         pass
     
-    def make_desision(self, options):
+    def make_desision(self, options, organization: Any = None):
         "Here is where a character will be given a choice and have to pick a winner based off traits and exterior things they own."
-        pass
+        selected_option = options[0]
+        for option in options:
+            if isinstance(option, PassiveTaskForce):
+                # weigh the options, see if it aligns with the leaders opinions and needs of their organization
+                pass
+            elif isinstance(option, TaskForce):
+                # weigh the options, see if it aligns with the leaders opinions and needs of their organization
+                pass
+        return selected_option
     
         
 class Organization:
@@ -71,14 +82,23 @@ class Organization:
 
 
     def pick_possible_task_forces(self):
-        # fill out a list of 2 possible passive tasks and + TaskForces
-        return []
+        available_resouces = ("community", "infrastructure", "materials", "force", "agriculture", "industry")
+        if self.passive_task_forces:
+            used_resources = set([ptf.resouce_type for ptf in self.passive_task_forces])
+            available_resouces = ("community", "infrastructure", "materials", "force", "agriculture", "industry") - used_resources
+        passives = [PassiveTaskForce(random.choice(available_resouces), self, random.randrange(1,self.resource_start_multiplier)) for i in available_resouces]
+        #TODO: org needs to know all entities, then we can make 2 random TaskForces related to them
+        return passives
     
     def make_task_force(self):
+        "use leader/leader attr + organization resources to determine if a task force/passive task force wants to be made."
         possible_task_forces = self.pick_possible_task_forces()
-        self.leader.make_desision(possible_task_forces)
-        # use leader/leader attr + organization resources to determine if a task force/passive task force wants to be made 
-        pass
+        new_task_force = self.leader.make_desision(possible_task_forces)
+        if new_task_force:
+            if isinstance(new_task_force, PassiveTaskForce):
+                self.passive_task_forces.append(new_task_force)
+            self.task_forces.append(new_task_force)
+            
 
     def degrade_resources(self):
         "Degrade all resources based off population existing"
@@ -87,9 +107,10 @@ class Organization:
         self.agriculture = self.agriculture - (self.population / 100)
         self.population = self.population + (((self.population + self.community)* 2) / 100) 
         self.materials = self.materials - (self.industry / 100)
-        pass
+        
 
     def move(self):
+        "A simulated year for an Org."
         [ptf.move() for ptf in self.passive_task_forces]
         [tf.move() for tf in self.task_forces]
         self.make_task_force() # maybe make a task force
@@ -124,15 +145,13 @@ class TaskForce:
     
     def __init__(self,
                  previous_leader: Optional[Type[Character]] = None,
-                 resources: int = 30,
-                 resouce_bill: Optional[Type[ResourceBill]] = None,
                  determination: int = 50,
                  organization: Any = None,
                  aggression: int = 50,
-                 mission_statement = Type[MissionStatement]):
+                 mission_statement: Optional[Type[MissionStatement]] = None):
         self.leader = previous_leader or Character()
-        self.resources = resources
-        self.resource_bill = resource_bill
+        self.resource_bill = self.generate_resource_bill()
+        self.failure_bill = self.generate_resource_bill()
         self.organization = organization
         self.mission_statement = mission_statement
         self.determination = determination # how desperate they want this taskForce to finish (priority)
@@ -147,7 +166,12 @@ class TaskForce:
             "industry": self.organization.industry
         }
 
+    def generate_resource_bill(self):
+        "Create a resouce bill for the task force depending on type."
+        return ResourceBill(None,10,10,10,10,10)
+        
     def has_no_resources(self):
+        "return Bool if the TF is out of a resource."
         for res in asdict(self.resource_bill).values():
             if type(res) == int and not res:
                 return True
@@ -169,9 +193,10 @@ class TaskForce:
         pass
 
     def dissolve(self):
+        "The org will eat up left over resources, paying the price for the Task Force"
         for res_key, res_val in asdict(self.resource_bill).items():
             self.resource_map[res_key] += res_val
-        self.organization.leader.make_desision([]) # TODO: organization handle_character function for leader (destroy, keep)
+        self.organization.leader.make_desision([TaskForce(None, 50, self.organization, 50, MissionStatement(self.leader, "Destroy"))]) # TODO: allow PTF to have a "fire" function, basically a freebe
         self.organization.task_forces.remove(self)
         # TODO: calculate loss and subject organization to it
     

@@ -5,7 +5,6 @@ import requests
 from redis import Redis
 from rq import Queue
 from pyt2s.services import stream_elements
-from .varz import GENERATE_ENDPOINT, STATIC_HOSTNAME, STATIC_MUSIC_PATH, STORY_PROMPTS, DIALOG_FOLDER
 from common.models import Quest, DialogList, Dialog
 import os
 from django.conf import settings
@@ -19,7 +18,7 @@ q = django_rq.get_queue('generate')
 
         
 def queued_generate(stringified_data, uuid, setting, voice, use_openai=False):
-    res = requests.post(GENERATE_ENDPOINT, data=stringified_data)
+    res = requests.post(settings.GENERATE_ENDPOINT, data=stringified_data)
     res_json = res.json()
     obj = stream_elements.StreamElements() if not use_openai else OpenAI(api_key=settings.OPENAI_KEY)
     found_quest = Quest.objects.filter(uuid=uuid).first() # for now lets just assume this will be ok
@@ -31,7 +30,7 @@ def queued_generate(stringified_data, uuid, setting, voice, use_openai=False):
     tts_responses = {}
     new_dialog_list = []
     for idx, dialog in enumerate(response_list):
-        cleaned_name = STATIC_MUSIC_PATH + DIALOG_FOLDER + f"{uuid[:10]}-{found_quest.name.replace(' ', '')}-{idx}" + ".mp3"
+        cleaned_name = settings.STATIC_MUSIC_PATH + settings.DIALOG_FOLDER + f"{uuid[:10]}-{found_quest.name.replace(' ', '')}-{idx}" + ".mp3"
         tts_responses[cleaned_name] = dialog
     for fname, dialog in tts_responses.items():
         # Custom Voice
@@ -46,7 +45,7 @@ def queued_generate(stringified_data, uuid, setting, voice, use_openai=False):
                 input=dialog,
             )
             response.stream_to_file(fname)
-        url = fname.replace(STATIC_MUSIC_PATH,STATIC_HOSTNAME)
+        url = fname.replace(settings.STATIC_MUSIC_PATH,settings.STATIC_HOSTNAME)
         new_dialog = Dialog(quest=found_quest, index=len(new_dialog_list), url=url, tags=found_quest.tags)
         new_dialog.save()
         new_dialog_list.append(new_dialog)
@@ -95,7 +94,7 @@ class Prompt:
 
     def generate_prompt(self):
         motivation_times = "tbd"
-        selected_prompt = random.choice(STORY_PROMPTS)
+        selected_prompt = random.choice(settings.STORY_PROMPTS)
         return selected_prompt.format(self.perspective, self.story_length, self.setting)
     
     def queue_generation(self, uuid):
