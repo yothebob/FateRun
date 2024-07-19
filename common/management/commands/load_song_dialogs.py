@@ -2,8 +2,6 @@ import os
 from django.core.management.base import BaseCommand
 from common.models import Song, Tag
 from django.conf import settings
-# from polls.models import Question as Poll
-
 
 class Command(BaseCommand):
     help = "Load new songs in the static folders as dialog objects in db"
@@ -12,9 +10,10 @@ class Command(BaseCommand):
         parser.add_argument("path", type=str)
 
     def handle(self, *args, **options):
+        ignore_folders = ["dialogs", "admin", "rest_framework"]
         song_folder = os.listdir(options["path"])
         for tag_type in song_folder:
-            if tag_type != "dialogs":
+            if tag_type not in ignore_folders:
                 found_tag = Tag.objects.filter(name=tag_type).first()
                 if not found_tag:
                     found_tag = Tag(name=tag_type, prompt=tag_type)

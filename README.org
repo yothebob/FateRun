@@ -21,6 +21,7 @@ An android application that gives you custom quests to inspire your run.
   - [X] FIX BUG, dialog list url is saving wrong because tag.__str__ is not correct, it needs to be .name.. I think its fixed but not prod.
     
 - Backend
+  - [ ] add DB collapse on dialogs/dialog lists to deleted quests
   - [ ] Create a story location finder (read story find location mentioned)
   - [ ] Impliment a non AI story generator
   - [ ] add images to song dialog lists

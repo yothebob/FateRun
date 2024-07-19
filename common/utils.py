@@ -9,8 +9,10 @@ def create_dialog_list(final_file_stack):
     for item in final_file_stack:
         if isinstance(item, Dialog):
             res.append({
-                "index": item.index,
-                "url": item.url
+                "url": item.url,
+                "name": "",
+                "author": "",
+                "image": ""
             })
         else:
             res.append({
